@@ -1,4 +1,37 @@
-﻿import { redirect } from 'next/navigation'
+cd "C:\Users\Shoks\Desktop\lms-final"
+
+Write-Host "Arret Node..." -ForegroundColor Cyan
+Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force
+
+Write-Host "Nettoyage fichiers debug temporaires..." -ForegroundColor Cyan
+
+$debugFiles = @(
+  "debug-onboarding.ps1",
+  "disable-onboarding-redirects.ps1",
+  "find-onboarding-loop.ps1",
+  "fix-app-layout-onboarding.ps1",
+  "fix-layout-debug-auth.ps1",
+  "fix-onboarding-loop-final.ps1",
+  "fix-onboarding-loop.ps1",
+  "onboarding-debug.txt",
+  "repair-onboarding-loop.js",
+  "repair-onboarding-loop.ps1",
+  "sync-clean-run.ps1",
+  "check-env.ps1"
+)
+
+foreach ($file in $debugFiles) {
+  Remove-Item $file -Force -ErrorAction SilentlyContinue
+}
+
+Remove-Item "apps\web\app\debug-auth" -Recurse -Force -ErrorAction SilentlyContinue
+
+Write-Host "Remise au propre du layout app..." -ForegroundColor Cyan
+
+$Layout = "apps\web\app\(app)\layout.tsx"
+
+@'
+import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/lib/supabase/server'
 import { AppShell } from '@/components/layout/app-shell'
 
@@ -68,3 +101,21 @@ export default async function AppLayout({
     </AppShell>
   )
 }
+'@ | Set-Content $Layout -Encoding UTF8
+
+Write-Host "Nettoyage cache Next/Turbo..." -ForegroundColor Cyan
+
+Remove-Item ".next" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item "apps\web\.next" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item ".turbo" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item "apps\web\.turbo" -Recurse -Force -ErrorAction SilentlyContinue
+
+Write-Host "Commit + push GitHub..." -ForegroundColor Cyan
+
+git add .
+git commit -m "add client locations module and clean auth debug"
+git push origin main
+
+Write-Host ""
+Write-Host "Projet nettoye et sauvegarde." -ForegroundColor Green
+Write-Host "Relance maintenant : npm run dev" -ForegroundColor Green

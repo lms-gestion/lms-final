@@ -1,0 +1,35 @@
+{
+  "name": "lms-gestion",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LMS Gestion — SaaS de gestion pour La Maison des Services et entités du holding",
+  "author": "La Maison des Services",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=20.10.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\" --cache",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\" --cache",
+    "db:generate": "pnpm --filter @lms/db db:generate",
+    "db:migrate": "pnpm --filter @lms/db db:migrate",
+    "db:push": "pnpm --filter @lms/db db:push",
+    "db:studio": "pnpm --filter @lms/db db:studio",
+    "db:seed": "pnpm --filter @lms/db db:seed",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.6",
+    "turbo": "^2.1.3",
+    "typescript": "^5.6.3"
+  }
+}

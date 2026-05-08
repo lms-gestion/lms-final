@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LMS Gestion — Aperçu V1</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          dark: '#07172f', dark2: '#09265a', blue: '#0F2644',
+          'blue-mid': '#1554a6', 'blue-light': '#e8f2ff',
+          gold: '#F5A623', orange: '#F97316',
+          'orange-dark': '#ea580c', 'orange-light': '#fff7ed',
+        }
+      }
+    }
+  }
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+  .grad-bg { background: linear-gradient(135deg, #07172f 0%, #09265a 45%, #0f3b78 100%); }
+  .grad-sidebar { background: linear-gradient(175deg, #07172f 0%, #09265a 35%, #0f3b78 70%, #082f6d 100%); }
+  .grad-cta { background: linear-gradient(135deg, #ffb020, #f97316); }
+  .grad-accent { background: linear-gradient(90deg, #F5A623, #F97316, #0F2644); }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+  .nav-pill { animation: pulse-glow 2s ease-in-out infinite; }
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(249, 115, 22, 0); }
+  }
+</style>
+</head>
+<body class="bg-slate-100 antialiased">
+
+<!-- Bandeau navigation entre écrans -->
+<div class="fixed top-0 left-0 right-0 z-50 bg-brand-blue text-white px-4 py-2.5 shadow-lg flex items-center gap-3 text-xs">
+  <span class="font-bold uppercase tracking-wider mr-2">📺 Aperçu V1 :</span>
+  <button onclick="show('login')" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition" data-tab="login">🔐 Login</button>
+  <button onclick="show('onboarding')" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition" data-tab="onboarding">✨ Onboarding</button>
+  <button onclick="show('dashboard')" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition" data-tab="dashboard">📊 Dashboard</button>
+  <button onclick="show('kanban')" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition" data-tab="kanban">🏗️ Kanban</button>
+  <button onclick="show('clients')" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition" data-tab="clients">👥 Clients</button>
+  <button onclick="show('factures')" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition" data-tab="factures">💶 Factures</button>
+  <button onclick="show('invitation')" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition" data-tab="invitation">📧 Invitation</button>
+  <span class="ml-auto text-white/50 text-[10px]">Mockup statique · Pas de backend</span>
+</div>
+
+<!-- ──────────────────────────────────────── -->
+<!-- ÉCRAN LOGIN -->
+<!-- ──────────────────────────────────────── -->
+<div class="screen" id="screen-login">
+  <div class="grad-bg min-h-screen flex items-center justify-center p-4 pt-16">
+    <div class="w-full max-w-md">
+      <div class="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-8 shadow-2xl">
+        <div class="text-center mb-8">
+          <div class="inline-block bg-white rounded-2xl p-3 mb-4 shadow-lg">
+            <svg viewBox="0 0 200 175" fill="none" width="48" height="42">
+              <path d="M100 10 L188 78 L188 165 L12 165 L12 78 Z" fill="#0F2644"/>
+              <rect x="116" y="100" width="72" height="65" rx="7" fill="#F5A623"/>
+            </svg>
+          </div>
+          <h1 class="text-xl font-black text-white tracking-wide">LA MAISON</h1>
+          <h2 class="text-xl font-black text-[#F5A623] tracking-wide">DES SERVICES</h2>
+          <p class="text-xs uppercase tracking-widest text-white/40 mt-2">Espace Gestion Interne</p>
+        </div>
+
+        <div class="flex gap-1 p-1 bg-white/5 rounded-lg mb-6">
+          <button class="flex-1 py-2 text-xs font-semibold rounded-md bg-white/10 text-white">Mot de passe</button>
+          <button class="flex-1 py-2 text-xs font-semibold rounded-md text-white/50 hover:text-white/70">Lien magique</button>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-white/50 mb-2">Identifiant</label>
+            <input type="email" placeholder="email@lamaisondesservices.fr" class="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-[#F5A623]/60 transition">
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-white/50 mb-2">Mot de passe</label>
+            <div class="relative">
+              <input type="password" placeholder="••••••••••••" class="w-full bg-white/10 border border-white/15 rounded-lg px-4 py-3 pr-12 text-white placeholder:text-white/30 focus:outline-none focus:border-[#F5A623]/60 transition">
+              <button class="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70">👁</button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs">
+            <label class="flex items-center gap-2 text-white/50 cursor-pointer">
+              <input type="checkbox" class="accent-[#F5A623]"> Se souvenir de moi
+            </label>
+            <a class="text-white/50 hover:text-white/70 cursor-pointer">Mot de passe oublié ?</a>
+          </div>
+          <button onclick="show('onboarding')" class="w-full py-3 rounded-lg font-bold text-white shadow-lg grad-cta hover:opacity-95 transition">Connexion →</button>
+        </div>
+      </div>
+      <p class="text-center text-xs text-white/30 mt-6">LMS Gestion v0.1 · La Maison des Services</p>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────── -->
+<!-- ÉCRAN ONBOARDING -->
+<!-- ──────────────────────────────────────── -->
+<div class="screen" id="screen-onboarding">
+  <div class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen py-12 px-4 pt-20">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-brand-blue">Bienvenue sur LMS Gestion</h1>
+        <p class="text-slate-600 mt-2">Configurons votre organisation en 4 étapes simples.</p>
+      </div>
+
+      <div class="rounded-lg border bg-white shadow-sm">
+        <div class="p-6">
+          <!-- Stepper -->
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center flex-1">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-brand-blue text-white">1</div>
+              <div class="flex-1 h-0.5 mx-2 bg-slate-200"></div>
+            </div>
+            <div class="flex items-center flex-1">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-slate-100 text-slate-400">2</div>
+              <div class="flex-1 h-0.5 mx-2 bg-slate-200"></div>
+            </div>
+            <div class="flex items-center flex-1">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-slate-100 text-slate-400">3</div>
+              <div class="flex-1 h-0.5 mx-2 bg-slate-200"></div>
+            </div>
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-slate-100 text-slate-400">4</div>
+            </div>
+          </div>
+
+          <h2 class="text-xl font-semibold mb-1">Étape 1/4 — Informations légales</h2>
+          <p class="text-sm text-slate-600 mb-6">Ces informations apparaîtront sur vos devis et factures.</p>
+
+          <div class="space-y-4">
+            <div>
+              <label class="text-sm font-medium block mb-1.5">Nom commercial *</label>
+              <input value="La Maison des Services" class="h-10 w-full rounded-md border border-slate-200 px-3 text-sm">
+            </div>
+            <div>
+              <label class="text-sm font-medium block mb-1.5">Raison sociale *</label>
+              <input value="La Maison des Services SAS" class="h-10 w-full rounded-md border border-slate-200 px-3 text-sm">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-sm font-medium block mb-1.5">SIRET</label>
+                <input value="123 456 789 01234" class="h-10 w-full rounded-md border border-slate-200 px-3 text-sm">
+              </div>
+              <div>
+                <label class="text-sm font-medium block mb-1.5">N° TVA intra</label>
+                <input value="FR12345678901" class="h-10 w-full rounded-md border border-slate-200 px-3 text-sm">
+              </div>
+            </div>
+            <div>
+              <label class="text-sm font-medium block mb-1.5">Adresse siège social</label>
+              <input value="420 av. Blaise Pascal, 34170 Castelnau-le-Lez" class="h-10 w-full rounded-md border border-slate-200 px-3 text-sm">
+            </div>
+          </div>
+
+          <div class="flex justify-between mt-8">
+            <button class="px-4 py-2 rounded-md border border-slate-200 text-sm font-medium opacity-50 cursor-not-allowed">← Précédent</button>
+            <button onclick="show('dashboard')" class="px-6 py-2 rounded-md grad-cta text-white font-semibold text-sm">Suivant →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────── -->
+<!-- ÉCRAN DASHBOARD -->
+<!-- ──────────────────────────────────────── -->
+<div class="screen" id="screen-dashboard">
+  <div class="flex h-screen pt-10">
+    <!-- Sidebar -->
+    <aside class="w-60 grad-sidebar flex flex-col text-white flex-shrink-0">
+      <div class="p-4 border-b border-white/10">
+        <div class="flex items-center gap-2">
+          <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+            <svg viewBox="0 0 200 175" fill="none" width="28" height="24">
+              <path d="M100 10 L188 78 L188 165 L12 165 L12 78 Z" fill="#0F2644"/>
+              <rect x="116" y="100" width="72" height="65" rx="7" fill="#F5A623"/>
+            </svg>
+          </div>
+          <div class="leading-tight">
+            <p class="text-[10px] font-black uppercase tracking-wide">La Maison des Services</p>
+            <p class="text-[8px] text-white/40 mt-0.5">Gestion interne · v0.1</p>
+          </div>
+        </div>
+      </div>
+      <nav class="flex-1 overflow-y-auto p-2 space-y-0.5 text-xs">
+        <a class="flex items-center gap-2.5 px-3 py-2 rounded-md grad-cta text-white font-semibold shadow-lg">📊 Tableau de bord</a>
+        <a onclick="show('kanban')" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">🏗️ Chantiers</a>
+        <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">📅 Planning</a>
+        <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">📄 Devis</a>
+        <a onclick="show('factures')" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">💶 Factures</a>
+        <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">📋 Bons d'intervention</a>
+        <a onclick="show('clients')" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">👥 Clients</a>
+        <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">👷 Équipe</a>
+        <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">🏭 Fournisseurs</a>
+        <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">📍 Agences</a>
+        <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">✨ Import IA</a>
+      </nav>
+      <div class="p-2 border-t border-white/10">
+        <div class="flex items-center gap-2 p-2 rounded-md hover:bg-white/5 cursor-pointer">
+          <div class="w-8 h-8 grad-cta rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0">JD</div>
+          <div class="flex-1 text-left min-w-0">
+            <p class="text-xs font-semibold truncate">Jef Dupont</p>
+            <p class="text-[10px] text-white/40 truncate">Owner</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="flex-1 flex flex-col overflow-hidden bg-slate-50">
+      <div class="h-1 grad-accent"></div>
+      <div class="flex-1 overflow-y-auto p-6">
+        <div class="mb-6">
+          <h1 class="text-2xl font-bold">Tableau de bord</h1>
+          <p class="text-sm text-slate-600">Bonjour Jef, voici votre journée du 6 mai 2026.</p>
+        </div>
+
+        <div class="grid grid-cols-4 gap-4 mb-6">
+          <div class="rounded-lg border bg-white shadow-sm p-4">
+            <p class="text-xs text-slate-500">CA mensuel</p>
+            <p class="text-2xl font-bold mt-1">42 380 €</p>
+            <p class="text-xs text-emerald-600 mt-1">↑ +12% vs N-1</p>
+          </div>
+          <div class="rounded-lg border bg-white shadow-sm p-4">
+            <p class="text-xs text-slate-500">Encours impayé</p>
+            <p class="text-2xl font-bold mt-1 text-red-600">4 230 €</p>
+            <p class="text-xs text-slate-400 mt-1">3 factures en retard</p>
+          </div>
+          <div class="rounded-lg border bg-white shadow-sm p-4">
+            <p class="text-xs text-slate-500">Chantiers actifs</p>
+            <p class="text-2xl font-bold mt-1">23</p>
+            <p class="text-xs text-orange-600 mt-1">2 urgences à dispatcher</p>
+          </div>
+          <div class="rounded-lg border bg-white shadow-sm p-4">
+            <p class="text-xs text-slate-500">Charge équipe</p>
+            <p class="text-2xl font-bold mt-1">87%</p>
+            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
+              <div class="h-full bg-orange-500" style="width:87%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <!-- Urgences -->
+          <div class="rounded-lg border bg-white shadow-sm">
+            <div class="border-b px-5 py-3 flex justify-between items-center">
+              <h2 class="font-bold flex items-center gap-2">🚨 Urgences à dispatcher</h2>
+              <span class="text-xs text-red-600 font-semibold">2</span>
+            </div>
+            <div class="divide-y">
+              <div class="px-5 py-3 flex items-center gap-3 hover:bg-red-50 cursor-pointer">
+                <div class="w-2 h-2 bg-red-600 rounded-full nav-pill"></div>
+                <div class="flex-1">
+                  <p class="text-sm font-semibold">Foncia Sud — Résidence Les Oliviers Apt 12</p>
+                  <p class="text-xs text-slate-500">🔧 Plomberie · Fuite radiateur · Créé il y a 18 min</p>
+                </div>
+                <span class="text-xs text-red-600 font-bold">URGENCE</span>
+              </div>
+              <div class="px-5 py-3 flex items-center gap-3 hover:bg-red-50 cursor-pointer">
+                <div class="w-2 h-2 bg-red-600 rounded-full nav-pill"></div>
+                <div class="flex-1">
+                  <p class="text-sm font-semibold">Nexity Castelnau — Bât B Apt 3</p>
+                  <p class="text-xs text-slate-500">⚡ Électricité · Court-circuit tableau · 32 min</p>
+                </div>
+                <span class="text-xs text-red-600 font-bold">URGENCE</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top clients -->
+          <div class="rounded-lg border bg-white shadow-sm">
+            <div class="border-b px-5 py-3">
+              <h2 class="font-bold">🏆 Top clients ce mois</h2>
+            </div>
+            <div class="divide-y">
+              <div class="px-5 py-3 flex items-center gap-3">
+                <div class="w-8 h-8 bg-brand-blue rounded-full text-white text-xs font-bold flex items-center justify-center">FS</div>
+                <div class="flex-1">
+                  <p class="text-sm font-semibold">Foncia Sud Méditerranée</p>
+                  <p class="text-xs text-slate-500">12 chantiers · 23 résidences</p>
+                </div>
+                <p class="text-sm font-bold">14 280 €</p>
+              </div>
+              <div class="px-5 py-3 flex items-center gap-3">
+                <div class="w-8 h-8 bg-orange-500 rounded-full text-white text-xs font-bold flex items-center justify-center">NX</div>
+                <div class="flex-1">
+                  <p class="text-sm font-semibold">Nexity Castelnau</p>
+                  <p class="text-xs text-slate-500">8 chantiers · 14 résidences</p>
+                </div>
+                <p class="text-sm font-bold">9 130 €</p>
+              </div>
+              <div class="px-5 py-3 flex items-center gap-3">
+                <div class="w-8 h-8 bg-emerald-500 rounded-full text-white text-xs font-bold flex items-center justify-center">CT</div>
+                <div class="flex-1">
+                  <p class="text-sm font-semibold">Citya Habitat Montpellier</p>
+                  <p class="text-xs text-slate-500">5 chantiers</p>
+                </div>
+                <p class="text-sm font-bold">6 410 €</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border bg-white shadow-sm">
+          <div class="border-b px-5 py-3 flex justify-between items-center">
+            <h2 class="font-bold">📅 Planning d'aujourd'hui</h2>
+            <span class="text-xs text-slate-500">Mercredi 6 mai 2026</span>
+          </div>
+          <div class="p-5 grid grid-cols-3 gap-3">
+            <div class="p-3 bg-blue-50 border border-blue-100 rounded-md">
+              <p class="text-xs text-blue-700 font-bold uppercase">Pierre Durand</p>
+              <p class="text-sm font-semibold mt-1">3 interventions</p>
+              <p class="text-xs text-slate-500 mt-1">8h30 → 17h00 · Plomberie</p>
+            </div>
+            <div class="p-3 bg-orange-50 border border-orange-100 rounded-md">
+              <p class="text-xs text-orange-700 font-bold uppercase">Marie Leroy</p>
+              <p class="text-sm font-semibold mt-1">2 interventions</p>
+              <p class="text-xs text-slate-500 mt-1">9h00 → 12h30 · Électricité</p>
+            </div>
+            <div class="p-3 bg-green-50 border border-green-100 rounded-md">
+              <p class="text-xs text-green-700 font-bold uppercase">Jean Martin</p>
+              <p class="text-sm font-semibold mt-1">Disponible</p>
+              <p class="text-xs text-slate-500 mt-1">Toiture · Serrurerie</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────── -->
+<!-- ÉCRAN KANBAN -->
+<!-- ──────────────────────────────────────── -->
+<div class="screen" id="screen-kanban">
+  <div class="flex h-screen pt-10">
+    <aside class="w-60 grad-sidebar flex flex-col text-white flex-shrink-0">
+      <div class="p-4 border-b border-white/10">
+        <div class="flex items-center gap-2">
+          <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center"><svg viewBox="0 0 200 175" fill="none" width="28" height="24"><path d="M100 10 L188 78 L188 165 L12 165 L12 78 Z" fill="#0F2644"/><rect x="116" y="100" width="72" height="65" rx="7" fill="#F5A623"/></svg></div>
+          <div class="leading-tight"><p class="text-[10px] font-black uppercase">La Maison des Services</p><p class="text-[8px] text-white/40 mt-0.5">v0.1</p></div>
+        </div>
+      </div>
+      <nav class="flex-1 p-2 space-y-0.5 text-xs">
+        <a onclick="show('dashboard')" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">📊 Tableau de bord</a>
+        <a class="flex items-center gap-2.5 px-3 py-2 rounded-md grad-cta text-white font-semibold shadow-lg">🏗️ Chantiers</a>
+        <a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">📅 Planning</a>
+        <a onclick="show('factures')" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">💶 Factures</a>
+        <a onclick="show('clients')" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">👥 Clients</a>
+      </nav>
+    </aside>
+    <div class="flex-1 flex flex-col overflow-hidden bg-slate-50">
+      <div class="h-1 grad-accent"></div>
+      <div class="bg-white border-b px-5 py-3 flex items-center gap-3">
+        <h1 class="font-bold">🏗️ Chantiers</h1>
+        <span class="text-xs text-slate-500">23 actifs</span>
+        <div class="flex-1"></div>
+        <div class="flex gap-1 text-xs">
+          <span class="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-md font-medium cursor-pointer">Tous</span>
+          <span class="px-2.5 py-1 hover:bg-slate-100 rounded-md cursor-pointer">🔴 Urgences</span>
+          <span class="px-2.5 py-1 hover:bg-slate-100 rounded-md cursor-pointer">📍 Montpellier</span>
+          <span class="px-2.5 py-1 hover:bg-slate-100 rounded-md cursor-pointer">📍 Perpignan</span>
+        </div>
+        <div class="flex-1"></div>
+        <button class="px-3 py-1.5 bg-brand-blue text-white rounded-md text-xs font-medium">+ Chantier</button>
+      </div>
+      <div class="flex-1 flex gap-3 p-4 overflow-x-auto">
+        <!-- Colonne Nouveau -->
+        <div class="w-72 flex-shrink-0">
+          <div class="bg-sky-500 text-white px-3 py-2 rounded-t-md flex items-center justify-between">
+            <span class="font-bold text-xs">🆕 Nouveau · 3</span>
+            <div class="flex gap-1 text-xs"><span class="cursor-pointer">+</span><span class="cursor-pointer">⋯</span></div>
+          </div>
+          <div class="bg-sky-50 border border-sky-100 rounded-b-md p-2 space-y-2 min-h-[400px]">
+            <div class="bg-white rounded-md border border-l-4 border-l-red-500 p-3 shadow-sm cursor-grab hover:shadow-md transition">
+              <p class="text-[10px] text-slate-400 font-mono">CH-2026-0042</p>
+              <p class="text-sm font-bold mt-0.5">Foncia Sud Med</p>
+              <p class="text-xs text-slate-500 mt-1">🔧 Plomberie · 📍 Montpellier</p>
+              <div class="flex gap-1 mt-2"><span class="text-[9px] bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-bold">🔴 URGENCE</span></div>
+              <div class="flex items-center justify-between mt-2 pt-2 border-t">
+                <span class="text-xs text-slate-500">— non assigné —</span>
+                <span class="text-[10px] text-slate-400">aujourd'hui</span>
+              </div>
+            </div>
+            <div class="bg-white rounded-md border border-l-4 border-l-amber-500 p-3 shadow-sm">
+              <p class="text-[10px] text-slate-400 font-mono">CH-2026-0041</p>
+              <p class="text-sm font-bold mt-0.5">Nexity Castelnau</p>
+              <p class="text-xs text-slate-500 mt-1">⚡ Électricité · 📍 Montpellier</p>
+              <div class="flex gap-1 mt-2"><span class="text-[9px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold">🟡 HAUTE</span></div>
+              <div class="flex items-center justify-between mt-2 pt-2 border-t">
+                <div class="flex items-center gap-1.5"><div class="w-5 h-5 bg-orange-500 rounded-full text-[8px] text-white font-bold flex items-center justify-center">PD</div><span class="text-xs text-slate-600">Pierre D.</span></div>
+                <span class="text-[10px] text-slate-400">il y a 2h</span>
+              </div>
+            </div>
+            <div class="bg-white rounded-md border border-l-4 border-l-green-500 p-3 shadow-sm">
+              <p class="text-[10px] text-slate-400 font-mono">CH-2026-0040</p>
+              <p class="text-sm font-bold mt-0.5">Citya Habitat</p>
+              <p class="text-xs text-slate-500 mt-1">🏠 Toiture · 📍 Lattes</p>
+              <div class="flex items-center justify-between mt-2 pt-2 border-t">
+                <span class="text-xs text-slate-500">— non assigné —</span>
+                <span class="text-[10px] text-slate-400">hier</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Colonne Planifié -->
+        <div class="w-72 flex-shrink-0">
+          <div class="bg-amber-500 text-white px-3 py-2 rounded-t-md flex items-center justify-between"><span class="font-bold text-xs">📅 Planifié · 5</span><span class="text-xs cursor-pointer">⋯</span></div>
+          <div class="bg-amber-50 border border-amber-100 rounded-b-md p-2 space-y-2 min-h-[400px]">
+            <div class="bg-white rounded-md border border-l-4 border-l-green-500 p-3 shadow-sm">
+              <p class="text-[10px] text-slate-400 font-mono">CH-2026-0039</p>
+              <p class="text-sm font-bold mt-0.5">Mme Dupont</p>
+              <p class="text-xs text-slate-500 mt-1">🪵 Menuiserie · 📍 Pérols</p>
+              <div class="flex items-center justify-between mt-2 pt-2 border-t">
+                <div class="flex items-center gap-1.5"><div class="w-5 h-5 bg-emerald-500 rounded-full text-[8px] text-white font-bold flex items-center justify-center">JM</div><span class="text-xs text-slate-600">Jean M.</span></div>
+                <span class="text-[10px] text-slate-400">08/05</span>
+              </div>
+            </div>
+            <div class="bg-white rounded-md border border-l-4 border-l-amber-500 p-3 shadow-sm">
+              <p class="text-[10px] text-slate-400 font-mono">CH-2026-0038</p>
+              <p class="text-sm font-bold mt-0.5">Hôtel Le Méridien</p>
+              <p class="text-xs text-slate-500 mt-1">🔧 Plomberie · 📍 Montpellier</p>
+              <div class="flex items-center justify-between mt-2 pt-2 border-t">
+                <div class="flex items-center gap-1.5"><div class="w-5 h-5 bg-orange-500 rounded-full text-[8px] text-white font-bold flex items-center justify-center">PD</div><span class="text-xs text-slate-600">Pierre D.</span></div>
+                <span class="text-[10px] text-slate-400">07/05</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Colonne En cours -->
+        <div class="w-72 flex-shrink-0">
+          <div class="bg-brand-blue text-white px-3 py-2 rounded-t-md flex items-center justify-between"><span class="font-bold text-xs">🔧 En cours · 8</span><span class="text-xs cursor-pointer">⋯</span></div>
+          <div class="bg-blue-50 border border-blue-100 rounded-b-md p-2 space-y-2 min-h-[400px]">
+            <div class="bg-white rounded-md border border-l-4 border-l-green-500 p-3 shadow-sm">
+              <p class="text-[10px] text-slate-400 font-mono">CH-2026-0037</p>
+              <p class="text-sm font-bold mt-0.5">Foncia Sud — Les Pins</p>
+              <p class="text-xs text-slate-500 mt-1">⚡ Électricité · 📍 Montpellier</p>
+              <p class="text-[9px] text-slate-400 mt-1">🔧 1/3 intervention(s)</p>
+              <div class="flex items-center justify-between mt-2 pt-2 border-t">
+                <div class="flex items-center gap-1.5"><div class="w-5 h-5 bg-purple-500 rounded-full text-[8px] text-white font-bold flex items-center justify-center">ML</div><span class="text-xs text-slate-600">Marie L.</span></div>
+                <span class="text-[10px] text-slate-400">depuis 2j</span>
+              </div>
+            </div>
+            <div class="bg-white rounded-md border border-l-4 border-l-amber-500 p-3 shadow-sm">
+              <p class="text-[10px] text-slate-400 font-mono">CH-2026-0036</p>
+              <p class="text-sm font-bold mt-0.5">Bailleur ICF</p>
+              <p class="text-xs text-slate-500 mt-1">🧱 Maçonnerie · 📍 Perpignan</p>
+              <div class="flex items-center justify-between mt-2 pt-2 border-t">
+                <div class="flex items-center gap-1.5"><div class="w-5 h-5 bg-cyan-500 rounded-full text-[8px] text-white font-bold flex items-center justify-center">RT</div><span class="text-xs text-slate-600">René T.</span></div>
+                <span class="text-[10px] text-slate-400">depuis 5j</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Colonne Terminé -->
+        <div class="w-72 flex-shrink-0">
+          <div class="bg-emerald-600 text-white px-3 py-2 rounded-t-md flex items-center justify-between"><span class="font-bold text-xs">✅ Terminé · 7</span><span class="text-xs cursor-pointer">⋯</span></div>
+          <div class="bg-emerald-50 border border-emerald-100 rounded-b-md p-2 space-y-2 min-h-[400px]">
+            <div class="bg-white rounded-md border border-l-4 border-l-green-500 p-3 shadow-sm opacity-80">
+              <p class="text-[10px] text-slate-400 font-mono">CH-2026-0035</p>
+              <p class="text-sm font-bold mt-0.5">Foncia Sud — Apt 7</p>
+              <p class="text-xs text-slate-500 mt-1">🔧 Plomberie · 📍 Castelnau</p>
+              <div class="flex items-center justify-between mt-2 pt-2 border-t">
+                <div class="flex items-center gap-1.5"><div class="w-5 h-5 bg-orange-500 rounded-full text-[8px] text-white font-bold flex items-center justify-center">PD</div><span class="text-xs text-slate-600">Pierre D.</span></div>
+                <span class="text-[10px] text-emerald-600 font-bold">FACTURÉ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Add column -->
+        <div class="w-72 flex-shrink-0 border-2 border-dashed border-slate-300 rounded-md flex items-center justify-center text-slate-400 text-sm cursor-pointer hover:border-brand-blue hover:text-brand-blue h-12">＋ Nouvelle colonne</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────── -->
+<!-- ÉCRAN CLIENTS -->
+<!-- ──────────────────────────────────────── -->
+<div class="screen" id="screen-clients">
+  <div class="flex h-screen pt-10">
+    <aside class="w-60 grad-sidebar flex flex-col text-white flex-shrink-0">
+      <div class="p-4 border-b border-white/10"><div class="flex items-center gap-2"><div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center"><svg viewBox="0 0 200 175" fill="none" width="28" height="24"><path d="M100 10 L188 78 L188 165 L12 165 L12 78 Z" fill="#0F2644"/><rect x="116" y="100" width="72" height="65" rx="7" fill="#F5A623"/></svg></div><div class="leading-tight"><p class="text-[10px] font-black uppercase">La Maison des Services</p><p class="text-[8px] text-white/40 mt-0.5">v0.1</p></div></div></div>
+      <nav class="flex-1 p-2 space-y-0.5 text-xs">
+        <a onclick="show('dashboard')" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">📊 Tableau de bord</a>
+        <a onclick="show('kanban')" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">🏗️ Chantiers</a>
+        <a onclick="show('factures')" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">💶 Factures</a>
+        <a class="flex items-center gap-2.5 px-3 py-2 rounded-md grad-cta text-white font-semibold shadow-lg">👥 Clients</a>
+      </nav>
+    </aside>
+    <div class="flex-1 flex flex-col overflow-hidden bg-slate-50">
+      <div class="h-1 grad-accent"></div>
+      <div class="flex-1 overflow-y-auto p-6">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h1 class="text-2xl font-bold">👥 Clients & Syndics</h1>
+            <p class="text-sm text-slate-600">142 clients actifs · 458 320 € de CA cumulé sur 12 mois</p>
+          </div>
+          <div class="flex gap-2">
+            <button class="px-3 py-1.5 border rounded-md text-sm">📥 Importer CSV</button>
+            <button class="px-4 py-1.5 grad-cta text-white rounded-md text-sm font-semibold">+ Nouveau client</button>
+          </div>
+        </div>
+        <div class="bg-white rounded-lg border shadow-sm overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+              <tr>
+                <th class="px-4 py-3 text-left font-bold">Nom</th>
+                <th class="px-4 py-3 text-left font-bold">Type</th>
+                <th class="px-4 py-3 text-left font-bold">CA 12 mois</th>
+                <th class="px-4 py-3 text-left font-bold">Encours</th>
+                <th class="px-4 py-3 text-left font-bold">Payeur</th>
+                <th class="px-4 py-3 text-left font-bold">Chantiers</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y">
+              <tr class="hover:bg-blue-50 cursor-pointer">
+                <td class="px-4 py-3"><strong>Foncia Sud Méditerranée</strong><br><span class="text-xs text-slate-500">SIRET 12345678901234</span></td>
+                <td class="px-4 py-3"><span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">Syndic</span></td>
+                <td class="px-4 py-3 font-semibold">145 220 €</td>
+                <td class="px-4 py-3 text-red-600 font-semibold">4 230 €</td>
+                <td class="px-4 py-3"><span class="inline-flex items-center gap-1 text-xs"><span class="w-2 h-2 bg-emerald-500 rounded-full"></span> Bon (92)</span></td>
+                <td class="px-4 py-3">12 actifs</td>
+              </tr>
+              <tr class="hover:bg-blue-50 cursor-pointer">
+                <td class="px-4 py-3"><strong>Nexity Castelnau</strong><br><span class="text-xs text-slate-500">SIRET 23456789012345</span></td>
+                <td class="px-4 py-3"><span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">Syndic</span></td>
+                <td class="px-4 py-3 font-semibold">98 540 €</td>
+                <td class="px-4 py-3">0 €</td>
+                <td class="px-4 py-3"><span class="inline-flex items-center gap-1 text-xs"><span class="w-2 h-2 bg-emerald-500 rounded-full"></span> Bon (98)</span></td>
+                <td class="px-4 py-3">8 actifs</td>
+              </tr>
+              <tr class="hover:bg-blue-50 cursor-pointer">
+                <td class="px-4 py-3"><strong>Bailleur ICF Habitat</strong><br><span class="text-xs text-slate-500">SIRET 34567890123456</span></td>
+                <td class="px-4 py-3"><span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">Bailleur</span></td>
+                <td class="px-4 py-3 font-semibold">72 110 €</td>
+                <td class="px-4 py-3 text-amber-600 font-semibold">8 950 €</td>
+                <td class="px-4 py-3"><span class="inline-flex items-center gap-1 text-xs"><span class="w-2 h-2 bg-amber-500 rounded-full"></span> Moyen (62)</span></td>
+                <td class="px-4 py-3">5 actifs</td>
+              </tr>
+              <tr class="hover:bg-blue-50 cursor-pointer">
+                <td class="px-4 py-3"><strong>Hôtel Le Méridien</strong><br><span class="text-xs text-slate-500">SIRET 45678901234567</span></td>
+                <td class="px-4 py-3"><span class="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full font-medium">Hôtel</span></td>
+                <td class="px-4 py-3 font-semibold">42 380 €</td>
+                <td class="px-4 py-3">0 €</td>
+                <td class="px-4 py-3"><span class="inline-flex items-center gap-1 text-xs"><span class="w-2 h-2 bg-emerald-500 rounded-full"></span> Bon (95)</span></td>
+                <td class="px-4 py-3">2 actifs</td>
+              </tr>
+              <tr class="hover:bg-blue-50 cursor-pointer">
+                <td class="px-4 py-3"><strong>Citya Habitat Montpellier</strong><br><span class="text-xs text-slate-500">SIRET 56789012345678</span></td>
+                <td class="px-4 py-3"><span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">Syndic</span></td>
+                <td class="px-4 py-3 font-semibold">34 920 €</td>
+                <td class="px-4 py-3 text-red-600 font-semibold">1 240 €</td>
+                <td class="px-4 py-3"><span class="inline-flex items-center gap-1 text-xs"><span class="w-2 h-2 bg-amber-500 rounded-full"></span> Moyen (58)</span></td>
+                <td class="px-4 py-3">3 actifs</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────── -->
+<!-- ÉCRAN FACTURES -->
+<!-- ──────────────────────────────────────── -->
+<div class="screen" id="screen-factures">
+  <div class="flex h-screen pt-10">
+    <aside class="w-60 grad-sidebar flex flex-col text-white flex-shrink-0">
+      <div class="p-4 border-b border-white/10"><div class="flex items-center gap-2"><div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center"><svg viewBox="0 0 200 175" fill="none" width="28" height="24"><path d="M100 10 L188 78 L188 165 L12 165 L12 78 Z" fill="#0F2644"/><rect x="116" y="100" width="72" height="65" rx="7" fill="#F5A623"/></svg></div><div class="leading-tight"><p class="text-[10px] font-black uppercase">La Maison des Services</p><p class="text-[8px] text-white/40 mt-0.5">v0.1</p></div></div></div>
+      <nav class="flex-1 p-2 space-y-0.5 text-xs">
+        <a onclick="show('dashboard')" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">📊 Tableau de bord</a>
+        <a onclick="show('kanban')" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">🏗️ Chantiers</a>
+        <a class="flex items-center gap-2.5 px-3 py-2 rounded-md grad-cta text-white font-semibold shadow-lg">💶 Factures</a>
+        <a onclick="show('clients')" class="flex items-center gap-2.5 px-3 py-2 rounded-md text-white/60 hover:bg-white/5 hover:text-white cursor-pointer">👥 Clients</a>
+      </nav>
+    </aside>
+    <div class="flex-1 flex flex-col overflow-hidden bg-slate-50">
+      <div class="h-1 grad-accent"></div>
+      <div class="flex-1 overflow-y-auto p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h1 class="text-2xl font-bold">💶 Factures</h1>
+          <div class="flex gap-2">
+            <button class="px-3 py-1.5 border rounded-md text-sm">📤 Exporter FEC</button>
+            <button class="px-4 py-1.5 grad-cta text-white rounded-md text-sm font-semibold">+ Nouvelle facture</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-4 gap-4 mb-6">
+          <div class="rounded-lg border bg-white shadow-sm p-4"><p class="text-xs text-slate-500">CA mensuel</p><p class="text-2xl font-bold mt-1">42 380 €</p></div>
+          <div class="rounded-lg border bg-white shadow-sm p-4"><p class="text-xs text-slate-500">Encours</p><p class="text-2xl font-bold mt-1 text-red-600">14 420 €</p></div>
+          <div class="rounded-lg border bg-white shadow-sm p-4"><p class="text-xs text-slate-500">En retard</p><p class="text-2xl font-bold mt-1 text-amber-600">3</p></div>
+          <div class="rounded-lg border bg-white shadow-sm p-4"><p class="text-xs text-slate-500">DSO</p><p class="text-2xl font-bold mt-1">42j</p></div>
+        </div>
+        <div class="bg-white rounded-lg border shadow-sm overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+              <tr>
+                <th class="px-4 py-3 text-left font-bold">N°</th>
+                <th class="px-4 py-3 text-left font-bold">Statut</th>
+                <th class="px-4 py-3 text-left font-bold">Client</th>
+                <th class="px-4 py-3 text-left font-bold">Émise</th>
+                <th class="px-4 py-3 text-left font-bold">Échéance</th>
+                <th class="px-4 py-3 text-right font-bold">TTC</th>
+                <th class="px-4 py-3 text-right font-bold">Reste dû</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y">
+              <tr class="hover:bg-blue-50 cursor-pointer">
+                <td class="px-4 py-3"><strong>FAC-2026-0042</strong><br><span class="text-[10px] text-slate-400">📄 Factur-X EN16931</span></td>
+                <td class="px-4 py-3"><span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium">✅ Payée</span></td>
+                <td class="px-4 py-3">Foncia Sud Méditerranée</td>
+                <td class="px-4 py-3">02/05/2026</td>
+                <td class="px-4 py-3">01/06/2026</td>
+                <td class="px-4 py-3 text-right font-semibold">3 240,00 €</td>
+                <td class="px-4 py-3 text-right text-slate-400">0,00 €</td>
+              </tr>
+              <tr class="hover:bg-blue-50 cursor-pointer">
+                <td class="px-4 py-3"><strong>FAC-2026-0041</strong></td>
+                <td class="px-4 py-3"><span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">⏳ Envoyée</span></td>
+                <td class="px-4 py-3">Nexity Castelnau</td>
+                <td class="px-4 py-3">28/04/2026</td>
+                <td class="px-4 py-3">28/05/2026</td>
+                <td class="px-4 py-3 text-right font-semibold">1 875,00 €</td>
+                <td class="px-4 py-3 text-right font-semibold">1 875,00 €</td>
+              </tr>
+              <tr class="hover:bg-blue-50 cursor-pointer">
+                <td class="px-4 py-3"><strong>FAC-2026-0040</strong></td>
+                <td class="px-4 py-3"><span class="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-medium">🔴 En retard 12j</span></td>
+                <td class="px-4 py-3">Bailleur ICF Habitat</td>
+                <td class="px-4 py-3">22/03/2026</td>
+                <td class="px-4 py-3 text-red-600 font-semibold">22/04/2026</td>
+                <td class="px-4 py-3 text-right font-semibold">8 950,00 €</td>
+                <td class="px-4 py-3 text-right text-red-600 font-semibold">8 950,00 €</td>
+              </tr>
+              <tr class="hover:bg-blue-50 cursor-pointer">
+                <td class="px-4 py-3"><strong>FAC-2026-0039</strong></td>
+                <td class="px-4 py-3"><span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">📄 Acompte</span></td>
+                <td class="px-4 py-3">Citya Habitat</td>
+                <td class="px-4 py-3">15/04/2026</td>
+                <td class="px-4 py-3">15/05/2026</td>
+                <td class="px-4 py-3 text-right font-semibold">1 240,00 €</td>
+                <td class="px-4 py-3 text-right text-amber-600 font-semibold">1 240,00 €</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────── -->
+<!-- ÉCRAN INVITATION -->
+<!-- ──────────────────────────────────────── -->
+<div class="screen" id="screen-invitation">
+  <div class="bg-slate-50 min-h-screen flex items-center justify-center p-4 pt-20">
+    <div class="max-w-md w-full">
+      <div class="bg-white rounded-2xl shadow-xl p-8 border">
+        <div class="text-center mb-6">
+          <div class="inline-block bg-brand-blue rounded-2xl p-3 mb-4">
+            <svg viewBox="0 0 200 175" fill="none" width="40" height="35"><path d="M100 10 L188 78 L188 165 L12 165 L12 78 Z" fill="#fff"/><rect x="116" y="100" width="72" height="65" rx="7" fill="#F5A623"/></svg>
+          </div>
+        </div>
+        <h1 class="text-xl font-bold mb-2">La Maison des Services vous invite</h1>
+        <p class="text-sm text-slate-600 mb-6">
+          Vous avez été invité à rejoindre <strong>La Maison des Services</strong> en tant que <strong>Technicien</strong>.
+        </p>
+        <blockquote class="border-l-4 border-brand-gold pl-4 py-2 text-sm text-slate-600 italic mb-6">
+          Bienvenue dans l'équipe Pierre, hâte de bosser avec toi !
+        </blockquote>
+
+        <div class="space-y-4">
+          <div>
+            <label class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1.5">Email</label>
+            <input value="pierre.durand@example.fr" disabled class="h-10 w-full rounded-md border border-slate-200 px-3 text-sm bg-slate-50">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1.5">Prénom *</label>
+              <input value="Pierre" class="h-10 w-full rounded-md border border-slate-200 px-3 text-sm">
+            </div>
+            <div>
+              <label class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1.5">Nom *</label>
+              <input value="Durand" class="h-10 w-full rounded-md border border-slate-200 px-3 text-sm">
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1.5">Mot de passe *</label>
+            <input type="password" value="••••••••••••" class="h-10 w-full rounded-md border border-slate-200 px-3 text-sm">
+            <div class="h-1 bg-slate-100 rounded-full overflow-hidden mt-2">
+              <div class="h-full bg-emerald-500" style="width:100%"></div>
+            </div>
+          </div>
+          <div class="flex items-start gap-2">
+            <input type="checkbox" checked class="mt-0.5">
+            <label class="text-xs text-slate-600">J'accepte les conditions générales et la politique de confidentialité.</label>
+          </div>
+          <button class="w-full py-3 grad-cta text-white rounded-md font-semibold">Créer mon compte</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function show(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
+    document.getElementById('screen-' + name).classList.add('active')
+    document.querySelectorAll('[data-tab]').forEach(b => {
+      b.classList.toggle('bg-brand-gold', b.dataset.tab === name)
+      b.classList.toggle('text-brand-blue', b.dataset.tab === name)
+      b.classList.toggle('font-bold', b.dataset.tab === name)
+      if (b.dataset.tab !== name) {
+        b.classList.add('bg-white/10')
+        b.classList.remove('bg-brand-gold', 'text-brand-blue', 'font-bold')
+      } else {
+        b.classList.remove('bg-white/10')
+      }
+    })
+  }
+  show('login')
+</script>
+
+</body>
+</html>

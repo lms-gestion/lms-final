@@ -1,0 +1,30 @@
+name: DB Migrations Check
+
+on:
+  pull_request:
+    paths:
+      - 'packages/db/**'
+
+jobs:
+  check:
+    name: Vérifier que les migrations sont à jour
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: '9.12.0' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '20.10.0', cache: 'pnpm' }
+      - run: pnpm install --frozen-lockfile
+      - name: Generate migrations
+        run: pnpm db:generate
+        env:
+          DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/postgres'
+      - name: Vérifier qu'aucune migration n'est manquante
+        run: |
+          if [ -n "$(git status --porcelain packages/db/migrations)" ]; then
+            echo "❌ Migrations Drizzle hors-sync. Lance 'pnpm db:generate' et commit les fichiers."
+            git status packages/db/migrations
+            exit 1
+          fi
+          echo "✅ Migrations à jour"

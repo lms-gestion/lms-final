@@ -1,0 +1,28 @@
+{
+  "name": "lms-gestion",
+  "version": "0.0.1",
+  "description": "La Maison des Services — Gestion interne",
+  "main": "main.js",
+  "author": "La Maison des Services",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "fr.lamaisondesservices.gestion",
+    "productName": "LMS Gestion",
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }, { "target": "portable", "arch": ["x64"] }],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true, "createDesktopShortcut": true, "shortcutName": "LMS Gestion" },
+    "files": ["main.js", "preload.js", "src/**/*", "assets/**/*"],
+    "directories": { "output": "dist" }
+  }
+}

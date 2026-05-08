@@ -1,0 +1,69 @@
+﻿import { redirect } from 'next/navigation'
+import { createSupabaseServer } from '@/lib/supabase/server'
+import { AppShell } from '@/components/layout/app-shell'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
+export default async function AppLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const supabase = createSupabaseServer()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const { data: membership } = await supabase
+    .from('memberships')
+    .select('id, user_id, organization_id, role, is_active')
+    .eq('user_id', user.id)
+    .eq('is_active', true)
+    .limit(1)
+    .maybeSingle()
+
+  if (!membership) {
+    redirect('/debug-auth')
+  }
+
+  const { data: organization } = await supabase
+    .from('organizations')
+    .select('id, name, slug')
+    .eq('id', membership.organization_id)
+    .maybeSingle()
+
+  if (!organization) {
+    redirect('/debug-auth')
+  }
+
+  const { data: profile } = await supabase
+    .from('users')
+    .select('id, email, full_name, avatar_url')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  return (
+    <AppShell
+      user={{
+        id: user.id,
+        email: user.email ?? profile?.email ?? '',
+        name: profile?.full_name ?? user.email ?? 'Utilisateur',
+        avatarUrl: profile?.avatar_url ?? null,
+      }}
+      organization={{
+        id: organization.id,
+        name: organization.name,
+        slug: organization.slug,
+        role: membership.role,
+      }}
+    >
+      {children}
+    </AppShell>
+  )
+}

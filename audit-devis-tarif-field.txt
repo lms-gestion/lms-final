@@ -1,0 +1,190 @@
+﻿
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:21:  type: LineType
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:22:  position: number
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:23:  description: string
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:24:  quantity: string
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:25:  unit: string
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:26:  unitPriceHt: string
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:27:  vatRate: string
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:28:  discountPct: string
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:29:}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:32:  type: 'item',
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:33:  position: 0,
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:34:  description: '',
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:35:  quantity: '1',
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:36:  unit: 'u',
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:37:  unitPriceHt: '0',
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:38:  vatRate: '20',
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:39:  discountPct: '0',
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:40:}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:62:  return d.toLocaleDateString('fr-FR')
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:63:}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:64:
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:65:function lineTotalHt(l: Line): number {
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:66:  if (l.type !== 'item') return 0
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:67:  const qty = num(l.quantity)
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:68:  const pu = num(l.unitPriceHt)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:69:  const disc = num(l.discountPct)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:70:  return qty * pu * (1 - disc / 100)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:71:}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:99:        type: (l.type as LineType) ?? 'item',
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:100:        position: l.position ?? idx,
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:101:        description: l.description ?? '',
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:102:        quantity: l.quantity ?? '0',
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:103:        unit: l.unit ?? 'u',
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:104:        unitPriceHt: l.unitPriceHt ?? '0',
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:105:        vatRate: l.vatRate ?? '20',
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:106:        discountPct: l.discountPct ?? '0',
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:107:      })),
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:146:
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:147:    for (const l of lines) {
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:148:      if (l.type !== 'item') continue
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:149:      const lineHt = lineTotalHt(l)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:150:      const vat = num(l.vatRate)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:151:      const lineTva = lineHt * (vat / 100)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:152:      ht += lineHt
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:213:          type: l.type,
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:214:          position: i,
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:215:          description: l.description,
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:216:          quantity: l.type === 'item' ? num(l.quantity) : 
+null,
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:217:          unit: l.type === 'item' ? l.unit : null,
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:218:          unitPriceHt: l.type === 'item' ? 
+num(l.unitPriceHt) : null,
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:219:          vatRate: l.type === 'item' ? num(l.vatRate) : 
+null,
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:220:          discountPct: l.type === 'item' ? 
+num(l.discountPct) : null,
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:221:        })),
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:348:              <label className="mb-1 block text-xs 
+font-semibold uppercase text-slate-500">Objet</label>
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:349:              <input
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:350:                value={subject}
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:351:                onChange={(e) => {
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:352:                  setSubject(e.target.value)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:353:                  setDirty(true)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:354:                }}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:361:              </label>
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:362:              <textarea
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:363:                value={introText}
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:364:                onChange={(e) => {
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:365:                  setIntroText(e.target.value)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:366:                  setDirty(true)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:367:                }}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:375:              <input
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:376:                type="date"
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:377:                value={expiryDate}
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:378:                onChange={(e) => {
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:379:                  setExpiryDate(e.target.value)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:380:                  setDirty(true)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:381:                }}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:391:                min={0}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:392:                max={100}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:393:                value={acomptePct}
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:394:                onChange={(e) => {
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:395:                  setAcomptePct(e.target.value)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:396:                  setDirty(true)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:397:                }}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:404:              </label>
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:405:              <input
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:406:                value={paymentTerms}
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:407:                onChange={(e) => {
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:408:                  setPaymentTerms(e.target.value)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:409:                  setDirty(true)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:410:                }}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:494:                        {isDraft ? (
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:495:                          <input
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:496:                            value={line.description}
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:497:                            onChange={(e) => setLine(idx, 
+{ description: e.target.value })}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:498:                            placeholder="Titre de section 
+(ex : PHASE 1 - Demolition)"
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:499:                            className="w-full 
+bg-transparent font-bold uppercase text-slate-800 outline-none"
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:500:                          />
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:524:                        {isDraft ? (
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:525:                          <input
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:526:                            value={line.description}
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:527:                            onChange={(e) => setLine(idx, 
+{ description: e.target.value })}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:528:                            placeholder="Note libre..."
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:529:                            className="w-full 
+bg-transparent italic outline-none"
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:530:                          />
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:573:                      {isDraft ? (
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:574:                        <textarea
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:575:                          value={line.description}
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:576:                          onChange={(e) => setLine(idx, { 
+description: e.target.value })}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:577:                          rows={1}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:578:                          placeholder="Description de la 
+prestation"
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:579:                          className="w-full resize-none 
+border-0 bg-transparent outline-none focus:ring-0"
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:587:                        <input
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:588:                          type="number"
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:589:                          step="0.01"
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:590:                          value={line.quantity}
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:591:                          onChange={(e) => setLine(idx, { 
+quantity: e.target.value })}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:592:                          className="w-full bg-transparent 
+text-right outline-none"
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:593:                        />
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:594:                      ) : (
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:595:                        line.quantity
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:596:                      )}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:597:                    </td>
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:598:                    <td className="px-2 py-2">
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:599:                      {isDraft ? (
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:600:                        <select
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:601:                          value={line.unit}
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:602:                          onChange={(e) => setLine(idx, { 
+unit: e.target.value })}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:603:                          className="w-full bg-transparent 
+outline-none"
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:604:                        >
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:605:                          {(selectors?.lineUnits ?? 
+['u']).map((u) => (
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:617:                        <input
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:618:                          type="number"
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:619:                          step="0.01"
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:620:                          value={line.unitPriceHt}
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:621:                          onChange={(e) => setLine(idx, { 
+unitPriceHt: e.target.value })}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:622:                          className="w-full bg-transparent 
+text-right outline-none"
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:623:                        />
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:624:                      ) : (
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:625:                        formatEur(line.unitPriceHt)
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:626:                      )}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:627:                    </td>
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:628:                    <td className="px-2 py-2 text-right">
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:629:                      {isDraft ? (
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:630:                        <select
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:631:                          value={line.vatRate}
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:632:                          onChange={(e) => setLine(idx, { 
+vatRate: e.target.value })}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:633:                          className="w-full bg-transparent 
+text-right outline-none"
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:634:                        >
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:635:                          {(selectors?.vatRates ?? 
+[20]).map((r) => (
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:648:                          type="number"
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:649:                          step="1"
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:650:                          value={line.discountPct}
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:651:                          onChange={(e) => setLine(idx, { 
+discountPct: e.target.value })}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:652:                          className="w-full bg-transparent 
+text-right outline-none"
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:653:                        />
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:654:                      ) : (
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:656:                      )}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:657:                    </td>
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:658:                    <td className="px-2 py-2 text-right 
+font-semibold">
+> apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:659:                      {formatEur(lineTotalHt(line))}
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:660:                    </td>
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:661:                    {isDraft && (
+  apps\web\app\(app)\devis\[id]\quote-detail-client.tsx:662:                      <td className="px-2 py-2 text-right">
+
+

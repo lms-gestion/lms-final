@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -387,7 +387,7 @@ export function QuoteDetailClient({ id }: { id: string }) {
                 Acompte (%)
               </label>
               <input
-                type="number"
+                type="text" inputMode="decimal"
                 min={0}
                 max={100}
                 value={acomptePct}
@@ -585,7 +585,7 @@ export function QuoteDetailClient({ id }: { id: string }) {
                     <td className="px-2 py-2 text-right">
                       {isDraft ? (
                         <input
-                          type="number"
+                          type="text" inputMode="decimal"
                           step="0.01"
                           value={line.quantity}
                           onChange={(e) => setLine(idx, { quantity: e.target.value })}
@@ -615,7 +615,7 @@ export function QuoteDetailClient({ id }: { id: string }) {
                     <td className="px-2 py-2 text-right">
                       {isDraft ? (
                         <input
-                          type="number"
+                          type="text" inputMode="decimal"
                           step="0.01"
                           value={line.unitPriceHt}
                           onChange={(e) => setLine(idx, { unitPriceHt: e.target.value })}
@@ -645,7 +645,7 @@ export function QuoteDetailClient({ id }: { id: string }) {
                     <td className="px-2 py-2 text-right">
                       {isDraft ? (
                         <input
-                          type="number"
+                          type="text" inputMode="decimal"
                           step="1"
                           value={line.discountPct}
                           onChange={(e) => setLine(idx, { discountPct: e.target.value })}

@@ -3,6 +3,8 @@
  */
 
 import { router } from './server'
+import { suppliersRouter } from './routers/suppliers'
+import { techniciansRouter } from './routers/technicians'
 import { authRouter } from './routers/auth'
 import { onboardingRouter } from './routers/onboarding'
 import { invitationsRouter } from './routers/invitations'
@@ -12,6 +14,8 @@ import { clientLocationsRouter } from './routers/client-locations'
 import { clientsRouter } from './routers/clients'
 
 export const appRouter = router({
+  suppliers: suppliersRouter,
+  technicians: techniciansRouter,
   auth: authRouter,
   onboarding: onboardingRouter,
   invitations: invitationsRouter,

@@ -222,12 +222,40 @@ export const interventionsRouter = router({
   }),
 
   updateStatus: orgProcedure.input(updateStatusInput).mutation(async ({ ctx, input }) => {
-    const values = {
+    const now = new Date()
+
+    const values: Record<string, any> = {
       status: input.status,
-      updatedAt: new Date(),
-      ...(input.status === 'en_cours' ? { arrivedAt: new Date() } : {}),
-      ...(input.status === 'terminee' ? { completedAt: new Date() } : {}),
-      ...(input.status === 'annulee' ? { cancelledAt: new Date() } : {}),
+      updatedAt: now,
+    }
+
+    if (input.status === 'planifiee') {
+      values.arrivedAt = null
+      values.completedAt = null
+      values.cancelledAt = null
+      values.cancellationReason = null
+    }
+
+    if (input.status === 'en_cours') {
+      values.arrivedAt = now
+      values.completedAt = null
+      values.cancelledAt = null
+      values.cancellationReason = null
+    }
+
+    if (input.status === 'terminee') {
+      values.completedAt = now
+      values.cancelledAt = null
+      values.cancellationReason = null
+    }
+
+    if (input.status === 'annulee') {
+      values.cancelledAt = now
+    }
+
+    if (input.status === 'reportee') {
+      values.cancelledAt = null
+      values.cancellationReason = null
     }
 
     const [intervention] = await db

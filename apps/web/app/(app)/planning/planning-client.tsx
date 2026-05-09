@@ -389,6 +389,18 @@ export function PlanningClient() {
                     </button>
                   )}
 
+                  {(intervention.status === 'annulee' || intervention.status === 'reportee') && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateStatus.mutate({ id: intervention.id, status: 'planifiee' })
+                      }
+                      className="rounded-lg border border-blue-200 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-50"
+                    >
+                      Replanifier
+                    </button>
+                  )}
+
                   {intervention.status !== 'annulee' && intervention.status !== 'terminee' && (
                     <button
                       type="button"

@@ -13,8 +13,10 @@ import { agenciesRouter } from './routers/agencies'
 import { clientLocationsRouter } from './routers/client-locations'
 import { clientsRouter } from './routers/clients'
 import { chantiersRouter } from './routers/chantiers'
+import { interventionsRouter } from './routers/interventions'
 
 export const appRouter = router({
+  interventions: interventionsRouter,
   chantiers: chantiersRouter,
   suppliers: suppliersRouter,
   technicians: techniciansRouter,

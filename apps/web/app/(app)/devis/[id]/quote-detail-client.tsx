@@ -245,6 +245,13 @@ export function QuoteDetailClient({ id }: { id: string }) {
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-3"><Link href="/devis" className="text-sm text-slate-500 hover:text-slate-700">
           {'< Retour aux devis'}
+        <Link
+          href={`/devis-public/${id}`}
+          target="_blank"
+          className="rounded-lg bg-orange-500 px-3 py-1.5 text-sm font-bold text-white hover:bg-orange-600"
+        >
+          Voir PDF
+        </Link>
         </Link>
         </div>
         <div className="flex items-center gap-2">

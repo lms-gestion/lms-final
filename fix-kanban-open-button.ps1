@@ -1,4 +1,25 @@
-'use client'
+cd "C:\Users\Shoks\Desktop\lms-final"
+
+Write-Host "Arret Node..." -ForegroundColor Cyan
+Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force
+
+Write-Host "Correction bouton Ouvrir sur le Kanban..." -ForegroundColor Cyan
+
+@'
+const fs = require("fs");
+const path = require("path");
+
+const file = path.join(
+  process.cwd(),
+  "apps",
+  "web",
+  "app",
+  "(app)",
+  "chantiers",
+  "chantiers-kanban-client.tsx"
+);
+
+const content = String.raw`'use client'
 
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
@@ -486,3 +507,29 @@ export function ChantiersKanbanClient() {
     </div>
   )
 }
+`;
+
+fs.writeFileSync(file, content, "utf8");
+console.log("OK: bouton Ouvrir ajoute dans chantiers-kanban-client.tsx");
+'@ | Set-Content "fix-kanban-open-button.js" -Encoding UTF8
+
+node .\fix-kanban-open-button.js
+Remove-Item "fix-kanban-open-button.js" -Force -ErrorAction SilentlyContinue
+
+Write-Host "Verification du bouton Ouvrir..." -ForegroundColor Cyan
+Select-String -Path "apps\web\app\(app)\chantiers\chantiers-kanban-client.tsx" -Pattern "Ouvrir"
+
+Write-Host "Nettoyage cache..." -ForegroundColor Cyan
+Remove-Item ".next" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item "apps\web\.next" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item ".turbo" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item "apps\web\.turbo" -Recurse -Force -ErrorAction SilentlyContinue
+
+Write-Host "Commit + push..." -ForegroundColor Cyan
+git add .
+git commit -m "fix open button on chantiers kanban"
+git push origin main
+
+Write-Host ""
+Write-Host "Correction terminee." -ForegroundColor Green
+Write-Host "Relance : npm run dev" -ForegroundColor Green

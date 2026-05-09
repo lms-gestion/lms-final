@@ -259,24 +259,21 @@ export function QuoteDetailClient({ id }: { id: string }) {
               <button
                 type="button"
                 onClick={() => deleteMutation.mutate({ id })}
-                disabled={deleteMutation.isPending}
-                className="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700 hover:bg-red-100 disabled:opacity-60"
+                className="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700 hover:bg-red-100:opacity-60"
               >
                 Supprimer
               </button>
               <button
                 type="button"
                 onClick={save}
-                disabled={!dirty || updateMutation.isPending}
-                className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50:opacity-60"
               >
                 {updateMutation.isPending ? 'Sauvegarde...' : dirty ? 'Sauvegarder' : 'Sauvegarde'}
               </button>
               <button
                 type="button"
                 onClick={sendQuote}
-                disabled={sendMutation.isPending}
-                className="rounded-lg bg-orange-500 px-3 py-2 text-xs font-semibold text-white hover:bg-orange-600 disabled:opacity-60"
+                className="rounded-lg bg-orange-500 px-3 py-2 text-xs font-semibold text-white hover:bg-orange-600:opacity-60"
               >
                 {sendMutation.isPending ? 'Envoi...' : 'Envoyer'}
               </button>
@@ -558,16 +555,14 @@ export function QuoteDetailClient({ id }: { id: string }) {
                           <button
                             type="button"
                             onClick={() => moveLine(idx, 'up')}
-                            disabled={idx === 0}
-                            className="text-xs text-slate-400 hover:text-slate-700 disabled:opacity-30"
+                            className="text-xs text-slate-400 hover:text-slate-700:opacity-30"
                           >
                             ▲
                           </button>
                           <button
                             type="button"
                             onClick={() => moveLine(idx, 'down')}
-                            disabled={idx === lines.length - 1}
-                            className="text-xs text-slate-400 hover:text-slate-700 disabled:opacity-30"
+                            className="text-xs text-slate-400 hover:text-slate-700:opacity-30"
                           >
                             ▼
                           </button>
@@ -714,7 +709,6 @@ export function QuoteDetailClient({ id }: { id: string }) {
           <button
             type="button"
             onClick={save}
-            disabled={updateMutation.isPending}
             className="ml-2 font-semibold underline hover:text-orange-900"
           >
             {updateMutation.isPending ? 'Sauvegarde...' : 'Sauvegarder maintenant'}

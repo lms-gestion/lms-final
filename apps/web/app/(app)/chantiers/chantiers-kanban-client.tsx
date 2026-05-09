@@ -446,7 +446,7 @@ export function ChantiersKanbanClient() {
                             disabled={columnIndex === 0 || moveChantier.isPending}
                             className="rounded-lg border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 disabled:opacity-40"
                           >
-                            â†
+                            Precedent
                           </button>
 
                           <button
@@ -463,7 +463,7 @@ export function ChantiersKanbanClient() {
                             disabled={columnIndex === columns.length - 1 || moveChantier.isPending}
                             className="rounded-lg border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 disabled:opacity-40"
                           >
-                            â†’
+                            Suivant
                           </button>
                         </div>
                       </div>

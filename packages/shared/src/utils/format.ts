@@ -5,7 +5,7 @@
 import { format, formatDistanceToNow, formatRelative } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
-/** Formate un montant en EUR : 1234.56 → "1 234,56 €" */
+/** Formate un montant en EUR : 1234.56 Suivant "1 234,56 €" */
 export function formatEur(amount: number | string | null | undefined, opts: { showZero?: boolean } = {}): string {
   if (amount === null || amount === undefined || amount === '') return opts.showZero ? '0,00 €' : '—'
   const num = typeof amount === 'string' ? Number.parseFloat(amount) : amount
@@ -18,7 +18,7 @@ export function formatEur(amount: number | string | null | undefined, opts: { sh
   })
 }
 
-/** Formate un nombre : 1234567 → "1 234 567" */
+/** Formate un nombre : 1234567 Suivant "1 234 567" */
 export function formatNumber(n: number | null | undefined, fractionDigits = 0): string {
   if (n === null || n === undefined) return '—'
   return n.toLocaleString('fr-FR', {
@@ -27,7 +27,7 @@ export function formatNumber(n: number | null | undefined, fractionDigits = 0): 
   })
 }
 
-/** Formate un pourcentage : 0.20 → "20 %" (entrée = ratio 0-1) */
+/** Formate un pourcentage : 0.20 Suivant "20 %" (entrée = ratio 0-1) */
 export function formatPercent(ratio: number, fractionDigits = 0): string {
   return `${(ratio * 100).toLocaleString('fr-FR', {
     minimumFractionDigits: fractionDigits,
@@ -35,7 +35,7 @@ export function formatPercent(ratio: number, fractionDigits = 0): string {
   })} %`
 }
 
-/** Date courte : 2026-05-06 → "06/05/2026" */
+/** Date courte : 2026-05-06 Suivant "06/05/2026" */
 export function formatDate(date: Date | string | null | undefined): string {
   if (!date) return '—'
   const d = typeof date === 'string' ? new Date(date) : date
@@ -70,7 +70,7 @@ export function formatRelativeTime(date: Date | string | null | undefined): stri
   return formatDistanceToNow(d, { locale: fr, addSuffix: true })
 }
 
-/** Téléphone FR : "0612345678" → "06 12 34 56 78" */
+/** Téléphone FR : "0612345678" Suivant "06 12 34 56 78" */
 export function formatPhoneFr(phone: string | null | undefined): string {
   if (!phone) return ''
   const cleaned = phone.replace(/[^\d+]/g, '')
@@ -84,7 +84,7 @@ export function formatPhoneFr(phone: string | null | undefined): string {
   return phone
 }
 
-/** Téléphone E.164 : "0612345678" → "+33612345678" */
+/** Téléphone E.164 : "0612345678" Suivant "+33612345678" */
 export function toPhoneE164(phone: string | null | undefined): string | null {
   if (!phone) return null
   const cleaned = phone.replace(/[^\d+]/g, '')
@@ -93,7 +93,7 @@ export function toPhoneE164(phone: string | null | undefined): string | null {
   return null
 }
 
-/** SIRET formaté : "12345678901234" → "123 456 789 01234" */
+/** SIRET formaté : "12345678901234" Suivant "123 456 789 01234" */
 export function formatSiret(siret: string | null | undefined): string {
   if (!siret) return ''
   const cleaned = siret.replace(/\s/g, '')
@@ -103,7 +103,7 @@ export function formatSiret(siret: string | null | undefined): string {
   return siret
 }
 
-/** Initiales : "Marie Leroy" → "ML" */
+/** Initiales : "Marie Leroy" Suivant "ML" */
 export function getInitials(name: string | null | undefined): string {
   if (!name) return '?'
   return name

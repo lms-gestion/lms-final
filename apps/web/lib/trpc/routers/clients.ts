@@ -3,7 +3,7 @@
  *
  * Cf. spec module 03 — Clients & Contacts
  *
- * Sécurité : toutes les routes passent par orgProcedure → multi-tenant garanti
+ * Sécurité : toutes les routes passent par orgProcedure Suivant multi-tenant garanti
  * par les RLS Postgres (cf. infra/supabase/rls.sql).
  */
 

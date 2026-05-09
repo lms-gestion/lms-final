@@ -41,7 +41,7 @@ export type FacturxData = {
   }>
 }
 
-/** Mapping type interne → code CII (BT-3) */
+/** Mapping type interne Suivant code CII (BT-3) */
 const TYPE_CODE: Record<FacturxData['type'], string> = {
   standard: '380',
   avoir: '381',

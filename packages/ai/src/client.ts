@@ -27,7 +27,7 @@ export const PRICING = {
 
 export function calculateCostEur(model: string, tokensIn: number, tokensOut: number): number {
   const rates = PRICING[model as keyof typeof PRICING] ?? PRICING['claude-sonnet-4-6']
-  // Conversion USD → EUR ~0.92 (à ajuster)
+  // Conversion USD Suivant EUR ~0.92 (à ajuster)
   const usdCost = (tokensIn / 1_000_000) * rates.input + (tokensOut / 1_000_000) * rates.output
   return Math.round(usdCost * 0.92 * 10000) / 10000
 }

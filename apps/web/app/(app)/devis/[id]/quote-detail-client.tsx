@@ -242,6 +242,13 @@ export function QuoteDetailClient({ id }: { id: string }) {
 
   return (
     <div className="mx-auto max-w-5xl">
+      <Link
+        href={`/devis-public/${id}`}
+        target="_blank"
+        className="fixed right-6 top-6 z-50 rounded-lg bg-orange-500 px-4 py-2 text-sm font-bold text-white shadow-lg hover:bg-orange-600"
+      >
+        Voir PDF
+      </Link>
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-3"><div className="flex items-center gap-3">
       </div>

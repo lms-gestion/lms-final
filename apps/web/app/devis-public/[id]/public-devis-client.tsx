@@ -66,15 +66,19 @@ export function PublicDevisClient({ id }: { id: string }) {
                 <p className="font-extrabold text-slate-950">La Maison des Services</p>
                 <p>420 avenue Blaise Pascal</p>
                 <p>34170 Castelnau-le-Lez</p>
-                <p>SIRET : 99140452600014</p>
-                <p>TVA intra : FR75991404526</p>
+                <p>04 65 84 15 94</p>
+                <p>devis@lamaisondesservices.fr</p>
                 <p>https://lamaisondesservices.fr</p>
               </div>
             </div>
 
             <div className="text-right">
-              <p className="text-sm font-black uppercase tracking-[0.25em] text-[#f97316]">Document</p>
-              <h1 className="mt-2 text-5xl font-black tracking-tight text-slate-950">DEVIS</h1>
+              <p className="text-sm font-black uppercase tracking-[0.25em] text-[#f97316]">
+                Document
+              </p>
+              <h1 className="mt-2 text-5xl font-black tracking-tight text-slate-950">
+                DEVIS
+              </h1>
 
               <div className="mt-5 rounded-xl border border-orange-200 bg-orange-50 p-4 text-sm text-slate-800">
                 <p><span className="font-bold">Reference :</span> {quote.reference}</p>
@@ -86,7 +90,9 @@ export function PublicDevisClient({ id }: { id: string }) {
 
           <section className="mb-8 grid grid-cols-2 gap-6">
             <div className="rounded-xl border border-slate-200 p-5">
-              <h2 className="mb-3 text-xs font-black uppercase tracking-wide text-[#f97316]">Emetteur</h2>
+              <h2 className="mb-3 text-xs font-black uppercase tracking-wide text-[#f97316]">
+                Emetteur
+              </h2>
               <p className="font-bold text-slate-950">La Maison des Services</p>
               <p className="mt-1 text-sm text-slate-600">SIRET : 99140452600014</p>
               <p className="text-sm text-slate-600">TVA intra : FR75991404526</p>
@@ -94,20 +100,28 @@ export function PublicDevisClient({ id }: { id: string }) {
             </div>
 
             <div className="rounded-xl border border-slate-200 p-5">
-              <h2 className="mb-3 text-xs font-black uppercase tracking-wide text-[#f97316]">Client</h2>
+              <h2 className="mb-3 text-xs font-black uppercase tracking-wide text-[#f97316]">
+                Client
+              </h2>
               <p className="font-bold text-slate-950">{quote.clientName ?? 'Client'}</p>
-              {quote.clientLegalName && <p className="text-sm text-slate-600">{quote.clientLegalName}</p>}
+              {quote.clientLegalName && (
+                <p className="text-sm text-slate-600">{quote.clientLegalName}</p>
+              )}
             </div>
           </section>
 
           <section className="mb-8 rounded-xl border-l-4 border-[#f97316] bg-slate-50 p-5">
-            <h2 className="mb-2 text-xs font-black uppercase tracking-wide text-[#f97316]">Objet</h2>
+            <h2 className="mb-2 text-xs font-black uppercase tracking-wide text-[#f97316]">
+              Objet
+            </h2>
             <p className="font-semibold text-slate-950">{quote.subject}</p>
           </section>
 
           {quote.introText && (
             <section className="mb-8">
-              <p className="whitespace-pre-wrap text-sm leading-7 text-slate-700">{quote.introText}</p>
+              <p className="whitespace-pre-wrap text-sm leading-7 text-slate-700">
+                {quote.introText}
+              </p>
             </section>
           )}
 
@@ -193,12 +207,16 @@ export function PublicDevisClient({ id }: { id: string }) {
 
           <section className="mt-12 grid grid-cols-2 gap-8">
             <div className="rounded-xl border border-slate-200 p-5">
-              <h2 className="mb-12 text-xs font-black uppercase tracking-wide text-[#f97316]">Bon pour accord</h2>
+              <h2 className="mb-12 text-xs font-black uppercase tracking-wide text-[#f97316]">
+                Bon pour accord
+              </h2>
               <p className="text-sm text-slate-600">Nom, date, cachet et signature du client :</p>
             </div>
 
             <div className="rounded-xl border border-slate-200 p-5">
-              <h2 className="mb-12 text-xs font-black uppercase tracking-wide text-[#f97316]">Signature entreprise</h2>
+              <h2 className="mb-12 text-xs font-black uppercase tracking-wide text-[#f97316]">
+                Signature entreprise
+              </h2>
               <p className="text-sm font-semibold text-slate-950">La Maison des Services</p>
             </div>
           </section>

@@ -1,4 +1,4 @@
-﻿import { TRPCError } from '@trpc/server'
+import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { and, asc, desc, eq, isNull } from 'drizzle-orm'
 import { db, schema } from '@lms/db'
@@ -83,7 +83,7 @@ async function getOrCreateDefaultColumns(organizationId: string) {
       position: 10,
       key: 'nouveau',
       label: 'Nouveau',
-      emoji: 'ðŸ†•',
+      emoji: null,
       color: '#334155',
       bgColor: '#f8fafc',
       borderColor: '#e2e8f0',
@@ -94,7 +94,7 @@ async function getOrCreateDefaultColumns(organizationId: string) {
       position: 20,
       key: 'a_planifier',
       label: 'A planifier',
-      emoji: 'ðŸ“…',
+      emoji: null,
       color: '#7c2d12',
       bgColor: '#fff7ed',
       borderColor: '#fed7aa',
@@ -105,7 +105,7 @@ async function getOrCreateDefaultColumns(organizationId: string) {
       position: 30,
       key: 'planifie',
       label: 'Planifie',
-      emoji: 'ðŸ—“ï¸',
+      emoji: null,
       color: '#1e3a8a',
       bgColor: '#eff6ff',
       borderColor: '#bfdbfe',
@@ -116,7 +116,7 @@ async function getOrCreateDefaultColumns(organizationId: string) {
       position: 40,
       key: 'en_cours',
       label: 'En cours',
-      emoji: 'ðŸ”§',
+      emoji: null,
       color: '#854d0e',
       bgColor: '#fefce8',
       borderColor: '#fde68a',
@@ -127,7 +127,7 @@ async function getOrCreateDefaultColumns(organizationId: string) {
       position: 50,
       key: 'termine',
       label: 'Termine',
-      emoji: 'âœ…',
+      emoji: null,
       color: '#166534',
       bgColor: '#f0fdf4',
       borderColor: '#bbf7d0',
@@ -138,7 +138,7 @@ async function getOrCreateDefaultColumns(organizationId: string) {
       position: 60,
       key: 'facture',
       label: 'Facture',
-      emoji: 'ðŸ’¶',
+      emoji: null,
       color: '#581c87',
       bgColor: '#faf5ff',
       borderColor: '#e9d5ff',

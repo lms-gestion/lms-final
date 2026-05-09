@@ -101,13 +101,12 @@ export const interventionsRouter = router({
         .optional(),
     )
     .query(async ({ ctx, input }) => {
-      const filters = [
-        eq(schema.interventions.organizationId, ctx.organizationId),
-      ]
-
-      if (input?.chantierId) {
-        filters.push(eq(schema.interventions.chantierId, input.chantierId))
-      }
+      const whereClause = input?.chantierId
+        ? and(
+            eq(schema.interventions.organizationId, ctx.organizationId),
+            eq(schema.interventions.chantierId, input.chantierId),
+          )
+        : eq(schema.interventions.organizationId, ctx.organizationId)
 
       return db
         .select({
@@ -124,6 +123,8 @@ export const interventionsRouter = router({
           completedAt: schema.interventions.completedAt,
           notes: schema.interventions.notes,
           report: schema.interventions.report,
+          cancellationReason: schema.interventions.cancellationReason,
+          cancelledAt: schema.interventions.cancelledAt,
           createdAt: schema.interventions.createdAt,
           updatedAt: schema.interventions.updatedAt,
           chantierReference: schema.chantiers.reference,
@@ -136,7 +137,7 @@ export const interventionsRouter = router({
         .leftJoin(schema.chantiers, eq(schema.interventions.chantierId, schema.chantiers.id))
         .leftJoin(schema.clients, eq(schema.chantiers.clientId, schema.clients.id))
         .leftJoin(schema.technicians, eq(schema.interventions.technicianId, schema.technicians.id))
-        .where(and(...filters))
+        .where(whereClause)
         .orderBy(asc(schema.interventions.scheduledAt))
     }),
 
@@ -224,7 +225,7 @@ export const interventionsRouter = router({
   updateStatus: orgProcedure.input(updateStatusInput).mutation(async ({ ctx, input }) => {
     const now = new Date()
 
-    const values: Record<string, any> = {
+    const values: Record<string, unknown> = {
       status: input.status,
       updatedAt: now,
     }
@@ -254,6 +255,8 @@ export const interventionsRouter = router({
     }
 
     if (input.status === 'reportee') {
+      values.arrivedAt = null
+      values.completedAt = null
       values.cancelledAt = null
       values.cancellationReason = null
     }

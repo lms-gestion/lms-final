@@ -246,7 +246,7 @@ export function QuoteDetailClient({ id }: { id: string }) {
         <div className="flex items-center gap-3"><Link href="/devis" className="text-sm text-slate-500 hover:text-slate-700">
           {'< Retour aux devis'}
         </Link>
-        <Link href={`/devis/${id}/preview`} className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Apercu client</Link></div>
+        </div>
         <div className="flex items-center gap-2">
           <span
             className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase ${

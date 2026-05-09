@@ -94,6 +94,14 @@ export const techniciansRouter = router({
 
     if (!agencyId) {
       const agency = await getOrCreateDefaultAgency(ctx.organizationId)
+
+      if (!agency) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Impossible de creer agence principale',
+        })
+      }
+
       agencyId = agency.id
     }
 
@@ -130,16 +138,24 @@ export const techniciansRouter = router({
         throw new TRPCError({ code: 'FORBIDDEN' })
       }
 
+      const values: Record<string, unknown> = {
+        updatedAt: new Date(),
+      }
+
+      if (input.data.firstName !== undefined) values.firstName = input.data.firstName
+      if (input.data.lastName !== undefined) values.lastName = input.data.lastName
+      if (input.data.agencyId) values.agencyId = input.data.agencyId
+      if (input.data.trades !== undefined) values.trades = input.data.trades
+      if (input.data.isExternal !== undefined) values.isExternal = input.data.isExternal
+      if (input.data.hourlyCost !== undefined) values.hourlyCost = input.data.hourlyCost
+      if (input.data.email !== undefined) values.email = input.data.email || null
+      if (input.data.phone !== undefined) values.phone = input.data.phone || null
+      if (input.data.vehicle !== undefined) values.vehicle = input.data.vehicle || null
+      if (input.data.notes !== undefined) values.notes = input.data.notes || null
+
       const [technician] = await db
         .update(schema.technicians)
-        .set({
-          ...input.data,
-          email: input.data.email || undefined,
-          phone: input.data.phone || undefined,
-          vehicle: input.data.vehicle || undefined,
-          notes: input.data.notes || undefined,
-          updatedAt: new Date(),
-        })
+        .set(values)
         .where(
           and(
             eq(schema.technicians.id, input.id),

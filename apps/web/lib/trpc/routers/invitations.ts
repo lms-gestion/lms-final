@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Gestion des invitations
  */
 
@@ -31,8 +31,8 @@ export const invitationsRouter = router({
       .limit(1)
     if (!inv) throw new TRPCError({ code: 'NOT_FOUND', message: 'Invitation inconnue' })
     if (inv.acceptedAt) throw new TRPCError({ code: 'CONFLICT', message: 'Déjà acceptée' })
-    if (inv.revokedAt) throw new TRPCError({ code: 'GONE', message: 'Invitation révoquée' })
-    if (inv.expiresAt < new Date()) throw new TRPCError({ code: 'GONE', message: 'Invitation expirée' })
+    if (inv.revokedAt) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Invitation révoquée' })
+    if (inv.expiresAt < new Date()) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Invitation expirée' })
     return inv
   }),
 
@@ -123,8 +123,8 @@ export const invitationsRouter = router({
       .limit(1)
     if (!inv) throw new TRPCError({ code: 'NOT_FOUND' })
     if (inv.acceptedAt) throw new TRPCError({ code: 'CONFLICT', message: 'Déjà acceptée' })
-    if (inv.revokedAt) throw new TRPCError({ code: 'GONE' })
-    if (inv.expiresAt < new Date()) throw new TRPCError({ code: 'GONE', message: 'Expirée' })
+    if (inv.revokedAt) throw new TRPCError({ code: 'BAD_REQUEST' })
+    if (inv.expiresAt < new Date()) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Expirée' })
     if (ctx.user.email !== inv.email) {
       throw new TRPCError({ code: 'FORBIDDEN', message: 'Email ne correspond pas' })
     }

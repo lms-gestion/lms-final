@@ -1,4 +1,4 @@
-import { TRPCError } from '@trpc/server'
+﻿import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { and, asc, desc, eq, isNull } from 'drizzle-orm'
 import { db, schema } from '@lms/db'
@@ -72,6 +72,13 @@ async function getOrCreateDefaultAgency(organizationId: string) {
       status: 'active',
     })
     .returning()
+
+  if (!agency) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Impossible de creer agence principale',
+    })
+  }
 
   return agency
 }

@@ -62,7 +62,6 @@ export default async function AppLayout({
         name: organization.name,
         slug: organization.slug,
       }}
-      role={membership.role}
     >
       {children}
     </AppShell>

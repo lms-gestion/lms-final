@@ -14,10 +14,12 @@ import { clientLocationsRouter } from './routers/client-locations'
 import { clientsRouter } from './routers/clients'
 import { chantiersRouter } from './routers/chantiers'
 import { interventionsRouter } from './routers/interventions'
+import { quotesRouter } from './routers/quotes'
 
 export const appRouter = router({
   interventions: interventionsRouter,
   chantiers: chantiersRouter,
+  quotes: quotesRouter,
   suppliers: suppliersRouter,
   technicians: techniciansRouter,
   auth: authRouter,

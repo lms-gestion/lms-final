@@ -6,6 +6,16 @@ import { orgProcedure, router } from '../server'
 
 const chantierPriority = ['normal', 'haute', 'urgence'] as const
 
+const addressInput = z
+  .object({
+    street: z.string().optional(),
+    postalCode: z.string().optional(),
+    city: z.string().optional(),
+    lat: z.number().optional(),
+    lng: z.number().optional(),
+  })
+  .optional()
+
 const createChantierInput = z.object({
   clientId: z.string().uuid(),
   locationId: z.string().uuid().optional().nullable(),
@@ -24,15 +34,12 @@ const createChantierInput = z.object({
   deadlineDate: z.string().optional(),
   estimatedDurationHours: z.string().optional(),
   notes: z.string().optional(),
-  address: z
-    .object({
-      street: z.string().optional(),
-      postalCode: z.string().optional(),
-      city: z.string().optional(),
-      lat: z.number().optional(),
-      lng: z.number().optional(),
-    })
-    .optional(),
+  address: addressInput,
+})
+
+const updateChantierInput = z.object({
+  id: z.string().uuid(),
+  data: createChantierInput.partial(),
 })
 
 function generateReference() {
@@ -42,7 +49,7 @@ function generateReference() {
   const day = String(now.getDate()).padStart(2, '0')
   const suffix = Math.random().toString(36).slice(2, 6).toUpperCase()
 
-  return `CH-${year}${month}${day}-${suffix}`
+  return 'CH-' + year + month + day + '-' + suffix
 }
 
 async function getOrCreateDefaultAgency(organizationId: string) {
@@ -161,6 +168,50 @@ async function getOrCreateDefaultColumns(organizationId: string) {
     .orderBy(asc(schema.chantierColumns.position))
 }
 
+async function assertClientInOrg(clientId: string, organizationId: string) {
+  const [client] = await db
+    .select()
+    .from(schema.clients)
+    .where(and(eq(schema.clients.id, clientId), eq(schema.clients.organizationId, organizationId)))
+    .limit(1)
+
+  if (!client) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'Client introuvable',
+    })
+  }
+
+  return client
+}
+
+async function assertLocationForClient(
+  locationId: string | null | undefined,
+  clientId: string,
+  organizationId: string,
+) {
+  if (!locationId) return
+
+  const [location] = await db
+    .select()
+    .from(schema.clientLocations)
+    .where(
+      and(
+        eq(schema.clientLocations.id, locationId),
+        eq(schema.clientLocations.clientId, clientId),
+        eq(schema.clientLocations.organizationId, organizationId),
+      ),
+    )
+    .limit(1)
+
+  if (!location) {
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: 'Lieu invalide pour ce client',
+    })
+  }
+}
+
 export const chantiersRouter = router({
   board: orgProcedure.query(async ({ ctx }) => {
     const columns = await getOrCreateDefaultColumns(ctx.organizationId)
@@ -182,6 +233,7 @@ export const chantiersRouter = router({
         tenantPhone: schema.chantiers.tenantPhone,
         supplierReference: schema.chantiers.supplierReference,
         assignedTechnicianId: schema.chantiers.assignedTechnicianId,
+        supplierId: schema.chantiers.supplierId,
         scheduledDate: schema.chantiers.scheduledDate,
         deadlineDate: schema.chantiers.deadlineDate,
         estimatedDurationHours: schema.chantiers.estimatedDurationHours,
@@ -201,17 +253,77 @@ export const chantiersRouter = router({
       .leftJoin(schema.technicians, eq(schema.chantiers.assignedTechnicianId, schema.technicians.id))
       .leftJoin(schema.suppliers, eq(schema.chantiers.supplierId, schema.suppliers.id))
       .leftJoin(schema.agencies, eq(schema.chantiers.agencyId, schema.agencies.id))
-      .where(
-        and(
-          eq(schema.chantiers.organizationId, ctx.organizationId),
-          isNull(schema.chantiers.archivedAt),
-        ),
-      )
+      .where(and(eq(schema.chantiers.organizationId, ctx.organizationId), isNull(schema.chantiers.archivedAt)))
       .orderBy(desc(schema.chantiers.createdAt))
 
     return {
       columns,
       chantiers,
+    }
+  }),
+
+  get: orgProcedure.input(z.object({ id: z.string().uuid() })).query(async ({ ctx, input }) => {
+    const columns = await getOrCreateDefaultColumns(ctx.organizationId)
+
+    const [chantier] = await db
+      .select({
+        id: schema.chantiers.id,
+        organizationId: schema.chantiers.organizationId,
+        agencyId: schema.chantiers.agencyId,
+        reference: schema.chantiers.reference,
+        clientId: schema.chantiers.clientId,
+        locationId: schema.chantiers.locationId,
+        supplierId: schema.chantiers.supplierId,
+        assignedTechnicianId: schema.chantiers.assignedTechnicianId,
+        metier: schema.chantiers.metier,
+        priority: schema.chantiers.priority,
+        status: schema.chantiers.status,
+        title: schema.chantiers.title,
+        description: schema.chantiers.description,
+        address: schema.chantiers.address,
+        tenantName: schema.chantiers.tenantName,
+        tenantPhone: schema.chantiers.tenantPhone,
+        tenantEmail: schema.chantiers.tenantEmail,
+        supplierReference: schema.chantiers.supplierReference,
+        scheduledDate: schema.chantiers.scheduledDate,
+        deadlineDate: schema.chantiers.deadlineDate,
+        estimatedDurationHours: schema.chantiers.estimatedDurationHours,
+        notes: schema.chantiers.notes,
+        createdAt: schema.chantiers.createdAt,
+        updatedAt: schema.chantiers.updatedAt,
+        closedAt: schema.chantiers.closedAt,
+        clientName: schema.clients.name,
+        locationName: schema.clientLocations.name,
+        technicianFirstName: schema.technicians.firstName,
+        technicianLastName: schema.technicians.lastName,
+        supplierName: schema.suppliers.name,
+        agencyName: schema.agencies.name,
+      })
+      .from(schema.chantiers)
+      .leftJoin(schema.clients, eq(schema.chantiers.clientId, schema.clients.id))
+      .leftJoin(schema.clientLocations, eq(schema.chantiers.locationId, schema.clientLocations.id))
+      .leftJoin(schema.technicians, eq(schema.chantiers.assignedTechnicianId, schema.technicians.id))
+      .leftJoin(schema.suppliers, eq(schema.chantiers.supplierId, schema.suppliers.id))
+      .leftJoin(schema.agencies, eq(schema.chantiers.agencyId, schema.agencies.id))
+      .where(
+        and(
+          eq(schema.chantiers.id, input.id),
+          eq(schema.chantiers.organizationId, ctx.organizationId),
+          isNull(schema.chantiers.archivedAt),
+        ),
+      )
+      .limit(1)
+
+    if (!chantier) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Chantier introuvable',
+      })
+    }
+
+    return {
+      chantier,
+      columns,
     }
   }),
 
@@ -226,12 +338,7 @@ export const chantiersRouter = router({
         type: schema.clients.type,
       })
       .from(schema.clients)
-      .where(
-        and(
-          eq(schema.clients.organizationId, ctx.organizationId),
-          isNull(schema.clients.archivedAt),
-        ),
-      )
+      .where(and(eq(schema.clients.organizationId, ctx.organizationId), isNull(schema.clients.archivedAt)))
       .orderBy(asc(schema.clients.name))
 
     const locations = await db
@@ -242,12 +349,7 @@ export const chantiersRouter = router({
         address: schema.clientLocations.address,
       })
       .from(schema.clientLocations)
-      .where(
-        and(
-          eq(schema.clientLocations.organizationId, ctx.organizationId),
-          isNull(schema.clientLocations.archivedAt),
-        ),
-      )
+      .where(and(eq(schema.clientLocations.organizationId, ctx.organizationId), isNull(schema.clientLocations.archivedAt)))
       .orderBy(asc(schema.clientLocations.name))
 
     const technicians = await db
@@ -259,12 +361,7 @@ export const chantiersRouter = router({
         status: schema.technicians.status,
       })
       .from(schema.technicians)
-      .where(
-        and(
-          eq(schema.technicians.organizationId, ctx.organizationId),
-          eq(schema.technicians.status, 'active'),
-        ),
-      )
+      .where(and(eq(schema.technicians.organizationId, ctx.organizationId), eq(schema.technicians.status, 'active')))
       .orderBy(asc(schema.technicians.lastName))
 
     const suppliers = await db
@@ -274,12 +371,7 @@ export const chantiersRouter = router({
         type: schema.suppliers.type,
       })
       .from(schema.suppliers)
-      .where(
-        and(
-          eq(schema.suppliers.organizationId, ctx.organizationId),
-          isNull(schema.suppliers.archivedAt),
-        ),
-      )
+      .where(and(eq(schema.suppliers.organizationId, ctx.organizationId), isNull(schema.suppliers.archivedAt)))
       .orderBy(asc(schema.suppliers.name))
 
     const agencies = await db
@@ -311,23 +403,7 @@ export const chantiersRouter = router({
       })
     }
 
-    const [client] = await db
-      .select()
-      .from(schema.clients)
-      .where(
-        and(
-          eq(schema.clients.id, input.clientId),
-          eq(schema.clients.organizationId, ctx.organizationId),
-        ),
-      )
-      .limit(1)
-
-    if (!client) {
-      throw new TRPCError({
-        code: 'NOT_FOUND',
-        message: 'Client introuvable',
-      })
-    }
+    const client = await assertClientInOrg(input.clientId, ctx.organizationId)
 
     let agencyId = input.agencyId ?? client.defaultAgencyId ?? null
 
@@ -346,26 +422,7 @@ export const chantiersRouter = router({
       })
     }
 
-    if (input.locationId) {
-      const [location] = await db
-        .select()
-        .from(schema.clientLocations)
-        .where(
-          and(
-            eq(schema.clientLocations.id, input.locationId),
-            eq(schema.clientLocations.clientId, input.clientId),
-            eq(schema.clientLocations.organizationId, ctx.organizationId),
-          ),
-        )
-        .limit(1)
-
-      if (!location) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Lieu invalide pour ce client',
-        })
-      }
-    }
+    await assertLocationForClient(input.locationId, input.clientId, ctx.organizationId)
 
     const [chantier] = await db
       .insert(schema.chantiers)
@@ -398,6 +455,73 @@ export const chantiersRouter = router({
     return chantier
   }),
 
+  update: orgProcedure.input(updateChantierInput).mutation(async ({ ctx, input }) => {
+    if (!['owner', 'admin'].includes(ctx.role)) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'Seuls owner et admin peuvent modifier un chantier',
+      })
+    }
+
+    const [existing] = await db
+      .select()
+      .from(schema.chantiers)
+      .where(and(eq(schema.chantiers.id, input.id), eq(schema.chantiers.organizationId, ctx.organizationId)))
+      .limit(1)
+
+    if (!existing) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Chantier introuvable',
+      })
+    }
+
+    const nextClientId = input.data.clientId ?? existing.clientId
+
+    if (input.data.clientId) {
+      await assertClientInOrg(input.data.clientId, ctx.organizationId)
+    }
+
+    await assertLocationForClient(input.data.locationId, nextClientId, ctx.organizationId)
+
+    const values: Record<string, unknown> = {
+      updatedAt: new Date(),
+    }
+
+    if (input.data.clientId !== undefined) values.clientId = input.data.clientId
+    if (input.data.locationId !== undefined) values.locationId = input.data.locationId || null
+    if (input.data.supplierId !== undefined) values.supplierId = input.data.supplierId || null
+    if (input.data.assignedTechnicianId !== undefined) {
+      values.assignedTechnicianId = input.data.assignedTechnicianId || null
+    }
+    if (input.data.agencyId !== undefined) values.agencyId = input.data.agencyId || existing.agencyId
+    if (input.data.title !== undefined) values.title = input.data.title
+    if (input.data.description !== undefined) values.description = input.data.description || null
+    if (input.data.metier !== undefined) values.metier = input.data.metier
+    if (input.data.priority !== undefined) values.priority = input.data.priority
+    if (input.data.tenantName !== undefined) values.tenantName = input.data.tenantName || null
+    if (input.data.tenantPhone !== undefined) values.tenantPhone = input.data.tenantPhone || null
+    if (input.data.tenantEmail !== undefined) values.tenantEmail = input.data.tenantEmail || null
+    if (input.data.supplierReference !== undefined) {
+      values.supplierReference = input.data.supplierReference || null
+    }
+    if (input.data.scheduledDate !== undefined) values.scheduledDate = input.data.scheduledDate || null
+    if (input.data.deadlineDate !== undefined) values.deadlineDate = input.data.deadlineDate || null
+    if (input.data.estimatedDurationHours !== undefined) {
+      values.estimatedDurationHours = input.data.estimatedDurationHours || null
+    }
+    if (input.data.notes !== undefined) values.notes = input.data.notes || null
+    if (input.data.address !== undefined) values.address = input.data.address
+
+    const [chantier] = await db
+      .update(schema.chantiers)
+      .set(values)
+      .where(and(eq(schema.chantiers.id, input.id), eq(schema.chantiers.organizationId, ctx.organizationId)))
+      .returning()
+
+    return chantier
+  }),
+
   move: orgProcedure
     .input(
       z.object({
@@ -409,12 +533,7 @@ export const chantiersRouter = router({
       const [column] = await db
         .select()
         .from(schema.chantierColumns)
-        .where(
-          and(
-            eq(schema.chantierColumns.organizationId, ctx.organizationId),
-            eq(schema.chantierColumns.key, input.status),
-          ),
-        )
+        .where(and(eq(schema.chantierColumns.organizationId, ctx.organizationId), eq(schema.chantierColumns.key, input.status)))
         .limit(1)
 
       if (!column) {
@@ -431,12 +550,7 @@ export const chantiersRouter = router({
           updatedAt: new Date(),
           closedAt: column.isTerminal ? new Date() : null,
         })
-        .where(
-          and(
-            eq(schema.chantiers.id, input.id),
-            eq(schema.chantiers.organizationId, ctx.organizationId),
-          ),
-        )
+        .where(and(eq(schema.chantiers.id, input.id), eq(schema.chantiers.organizationId, ctx.organizationId)))
         .returning()
 
       return chantier
@@ -453,12 +567,7 @@ export const chantiersRouter = router({
         archivedAt: new Date(),
         updatedAt: new Date(),
       })
-      .where(
-        and(
-          eq(schema.chantiers.id, input.id),
-          eq(schema.chantiers.organizationId, ctx.organizationId),
-        ),
-      )
+      .where(and(eq(schema.chantiers.id, input.id), eq(schema.chantiers.organizationId, ctx.organizationId)))
 
     return { ok: true }
   }),

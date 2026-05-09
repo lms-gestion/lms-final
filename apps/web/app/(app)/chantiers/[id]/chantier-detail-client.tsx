@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { trpc } from '@/lib/trpc/client'
+import { ChantierInterventions } from './chantier-interventions'
 
 const metiers = [
   'plomberie',
@@ -456,6 +457,8 @@ export function ChantierDetailClient({ id }: { id: string }) {
                 {chantier.description || 'Aucune description renseignee.'}
               </p>
             </div>
+
+            <ChantierInterventions chantierId={id} />
 
             <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
               <h2 className="mb-3 text-lg font-semibold text-slate-900">Notes internes</h2>

@@ -152,6 +152,10 @@ async function assertClientInOrg(clientId: string, organizationId: string) {
 
 // ─── Router ───
 
+function formatQuoteReference(n: number) {
+  return 'D' + String(n).padStart(5, '0')
+}
+
 export const quotesRouter = router({
   /** Liste paginee de devis avec filtres */
   list: orgProcedure

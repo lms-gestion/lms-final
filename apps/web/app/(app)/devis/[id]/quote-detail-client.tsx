@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { trpc } from '@/lib/trpc/client'
 
-const LINE_TYPES = ['item', 'section', 'subtotal', 'note'] as const
-type LineType = (typeof LINE_TYPES)[number]
+type LineType = 'item' | 'section' | 'subtotal' | 'note'
 
 const STATUS_BADGE: Record<string, string> = {
   brouillon: 'bg-slate-100 text-slate-700 border-slate-200',
@@ -242,16 +241,19 @@ export function QuoteDetailClient({ id }: { id: string }) {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <Link
-        href={`/devis-public/${id}`}
-        target="_blank"
-        className="fixed right-6 top-6 z-50 rounded-lg bg-orange-500 px-4 py-2 text-sm font-bold text-white shadow-lg hover:bg-orange-600"
-      >
-        Voir PDF
-      </Link>
       <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-3"><div className="flex items-center gap-3">
-      </div>
+        <div className="flex items-center gap-3">
+          <Link href="/devis" className="text-sm text-slate-500 hover:text-slate-700">
+            {'< Retour aux devis'}
+          </Link>
+          <Link
+            href={`/devis-public/${id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-lg bg-orange-500 px-3 py-2 text-sm font-bold text-white hover:bg-orange-600"
+          >
+            Voir PDF
+          </Link>
         </div>
         <div className="flex items-center gap-2">
           <span

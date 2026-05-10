@@ -1,17 +1,18 @@
 /**
- * Routes tRPC pour les devis (CRUD + lignes + envoi)
+ * Routes tRPC pour les devis (CRUD + lignes + envoi + lecture publique)
  *
  * Cf. spec module 06 - Devis
  *
- * Securite : toutes les routes passent par orgProcedure (multi-tenant garanti
- * par les RLS Postgres).
+ * Securite : les routes internes passent par orgProcedure. La lecture publique
+ * expose uniquement les champs necessaires au rendu client.
  */
 
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { and, asc, desc, eq, isNull, or, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, isNull, sql } from 'drizzle-orm'
 import { db, schema } from '@lms/db'
-import { orgProcedure, router } from '../server'
+import { formatQuoteReference } from '@/lib/devis/reference'
+import { orgProcedure, publicProcedure, router } from '../server'
 
 const QUOTE_STATUSES = ['brouillon', 'envoye', 'consulte', 'accepte', 'refuse', 'expire'] as const
 const LINE_TYPES = ['item', 'section', 'subtotal', 'note'] as const
@@ -53,13 +54,29 @@ const updateQuoteInput = z.object({
 
 // ─── Utils ───
 
-function generateReference(): string {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-  const suffix = Math.random().toString(36).slice(2, 6).toUpperCase()
-  return 'DEVIS-' + year + month + day + '-' + suffix
+type QuoteTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
+
+async function reserveNextQuoteReference(
+  tx: QuoteTransaction,
+  organizationId: string,
+): Promise<string> {
+  await tx.execute(
+    sql`SELECT pg_advisory_xact_lock(hashtext('quotes:' || ${organizationId}::text))`,
+  )
+
+  const [row] = await tx
+    .select({
+      nextNumber: sql<number>`COALESCE(MAX((substring(${schema.quotes.reference} from 2))::integer), 0) + 1`,
+    })
+    .from(schema.quotes)
+    .where(
+      and(
+        eq(schema.quotes.organizationId, organizationId),
+        sql`${schema.quotes.reference} ~ '^D[0-9]+$'`,
+      ),
+    )
+
+  return formatQuoteReference(Number(row?.nextNumber ?? 1))
 }
 
 function generatePublicToken(): string {
@@ -151,10 +168,6 @@ async function assertClientInOrg(clientId: string, organizationId: string) {
 }
 
 // ─── Router ───
-
-function formatQuoteReference(n: number) {
-  return 'D' + String(n).padStart(5, '0')
-}
 
 export const quotesRouter = router({
   /** Liste paginee de devis avec filtres */
@@ -257,6 +270,50 @@ export const quotesRouter = router({
       .where(
         and(eq(schema.quotes.id, input.id), eq(schema.quotes.organizationId, ctx.organizationId)),
       )
+      .limit(1)
+
+    if (!quote) {
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'Devis introuvable' })
+    }
+
+    const lines = await db
+      .select()
+      .from(schema.quoteLines)
+      .where(eq(schema.quoteLines.quoteId, input.id))
+      .orderBy(asc(schema.quoteLines.position))
+
+    return { quote, lines }
+  }),
+
+  /** Lecture publique d'un devis, sans menu applicatif ni donnees internes */
+  getPublic: publicProcedure.input(z.object({ id: z.string().uuid() })).query(async ({ input }) => {
+    const [quote] = await db
+      .select({
+        id: schema.quotes.id,
+        reference: schema.quotes.reference,
+        status: schema.quotes.status,
+        issueDate: schema.quotes.issueDate,
+        expiryDate: schema.quotes.expiryDate,
+        subject: schema.quotes.subject,
+        introText: schema.quotes.introText,
+        paymentTerms: schema.quotes.paymentTerms,
+        acomptePct: schema.quotes.acomptePct,
+        totalHt: schema.quotes.totalHt,
+        totalTva: schema.quotes.totalTva,
+        totalTtc: schema.quotes.totalTtc,
+        totalDiscount: schema.quotes.totalDiscount,
+        clientName: schema.clients.name,
+        clientLegalName: schema.clients.legalName,
+        clientAddress: schema.clients.address,
+        clientEmail: schema.clients.email,
+        clientPhone: schema.clients.phone,
+        chantierReference: schema.chantiers.reference,
+        chantierTitle: schema.chantiers.title,
+      })
+      .from(schema.quotes)
+      .leftJoin(schema.clients, eq(schema.quotes.clientId, schema.clients.id))
+      .leftJoin(schema.chantiers, eq(schema.quotes.chantierId, schema.chantiers.id))
+      .where(eq(schema.quotes.id, input.id))
       .limit(1)
 
     if (!quote) {
@@ -388,56 +445,60 @@ export const quotesRouter = router({
       ? ((Number(totals.totalHt) * input.acomptePct) / 100).toFixed(2)
       : null
 
-    const [quote] = await db
-      .insert(schema.quotes)
-      .values({
-        organizationId: ctx.organizationId,
-        agencyId,
-        reference: generateReference(),
-        clientId: input.clientId,
-        chantierId: input.chantierId ?? undefined,
-        status: 'brouillon',
-        issueDate: issueDate.toISOString().slice(0, 10),
-        expiryDate: expiryDate.toISOString().slice(0, 10),
-        subject: input.subject,
-        introText: input.introText,
-        paymentTerms: input.paymentTerms,
-        acomptePct: input.acomptePct ? String(input.acomptePct) : undefined,
-        acompteAmountHt: acompteAmountHt ?? undefined,
-        totalHt: totals.totalHt,
-        totalTva: totals.totalTva,
-        totalTtc: totals.totalTtc,
-        totalDiscount: totals.totalDiscount,
-        publicToken: generatePublicToken(),
-        createdBy: ctx.user.id,
-      })
-      .returning()
+    const quote = await db.transaction(async (tx) => {
+      const [createdQuote] = await tx
+        .insert(schema.quotes)
+        .values({
+          organizationId: ctx.organizationId,
+          agencyId,
+          reference: await reserveNextQuoteReference(tx, ctx.organizationId),
+          clientId: input.clientId,
+          chantierId: input.chantierId ?? undefined,
+          status: 'brouillon',
+          issueDate: issueDate.toISOString().slice(0, 10),
+          expiryDate: expiryDate.toISOString().slice(0, 10),
+          subject: input.subject,
+          introText: input.introText,
+          paymentTerms: input.paymentTerms,
+          acomptePct: input.acomptePct ? String(input.acomptePct) : undefined,
+          acompteAmountHt: acompteAmountHt ?? undefined,
+          totalHt: totals.totalHt,
+          totalTva: totals.totalTva,
+          totalTtc: totals.totalTtc,
+          totalDiscount: totals.totalDiscount,
+          publicToken: generatePublicToken(),
+          createdBy: ctx.user.id,
+        })
+        .returning()
 
-    if (!quote) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' })
+      if (!createdQuote) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' })
 
-    if (input.lines.length > 0) {
-      await db.insert(schema.quoteLines).values(
-        input.lines.map((line) => ({
-          quoteId: quote.id,
-          position: line.position,
-          type: line.type,
-          description: line.description,
-          quantity: line.quantity != null ? String(line.quantity) : undefined,
-          unit: line.unit ?? undefined,
-          unitPriceHt: line.unitPriceHt != null ? String(line.unitPriceHt) : undefined,
-          vatRate: line.vatRate != null ? String(line.vatRate) : undefined,
-          discountPct: line.discountPct != null ? String(line.discountPct) : undefined,
-          totalHt:
-            line.type === 'item' && line.quantity != null && line.unitPriceHt != null
-              ? (
-                  Number(line.quantity) *
-                  Number(line.unitPriceHt) *
-                  (1 - Number(line.discountPct ?? 0) / 100)
-                ).toFixed(2)
-              : undefined,
-        })),
-      )
-    }
+      if (input.lines.length > 0) {
+        await tx.insert(schema.quoteLines).values(
+          input.lines.map((line) => ({
+            quoteId: createdQuote.id,
+            position: line.position,
+            type: line.type,
+            description: line.description,
+            quantity: line.quantity != null ? String(line.quantity) : undefined,
+            unit: line.unit ?? undefined,
+            unitPriceHt: line.unitPriceHt != null ? String(line.unitPriceHt) : undefined,
+            vatRate: line.vatRate != null ? String(line.vatRate) : undefined,
+            discountPct: line.discountPct != null ? String(line.discountPct) : undefined,
+            totalHt:
+              line.type === 'item' && line.quantity != null && line.unitPriceHt != null
+                ? (
+                    Number(line.quantity) *
+                    Number(line.unitPriceHt) *
+                    (1 - Number(line.discountPct ?? 0) / 100)
+                  ).toFixed(2)
+                : undefined,
+          })),
+        )
+      }
+
+      return createdQuote
+    })
 
     return quote
   }),

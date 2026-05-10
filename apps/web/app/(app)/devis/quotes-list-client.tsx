@@ -157,10 +157,23 @@ export function QuotesListClient() {
             <tbody>
               {filtered.map((q) => (
                 <tr key={q.id} className="border-b border-slate-100 last:border-b-0 hover:bg-blue-50/30">
-                  <td className="px-4 py-3 font-mono text-xs">
-                    <Link href={`/devis/${q.id}`} className="font-semibold text-slate-900 hover:underline">
-                      {q.reference}
-                    </Link>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Link
+                        href={`/devis/${q.id}`}
+                        className="font-mono text-xs font-semibold text-slate-900 hover:underline"
+                      >
+                        {q.reference}
+                      </Link>
+                      <Link
+                        href={`/devis-public/${q.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-semibold text-orange-600 hover:text-orange-700 hover:underline"
+                      >
+                        Voir devis
+                      </Link>
+                    </div>
                   </td>
                   <td className="px-4 py-3">
                     <span

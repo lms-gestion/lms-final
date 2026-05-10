@@ -86,10 +86,18 @@ export function PublicDevisClient({ id }: { id: string }) {
             </section>
 
             <section className="rounded-2xl border border-slate-200 bg-[#fbfaf7] p-4">
-              <div className="mb-3 flex items-start justify-between gap-4">
+              <div className="mb-3 text-right">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#f97316]">Document</p>
+                <h1 className="text-4xl font-black leading-none text-[#111827]">DEVIS</h1>
+              </div>
+
+              <div className="grid grid-cols-[1fr_auto] gap-4 border-t border-slate-200 pt-3">
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#f97316]">Document</p>
-                  <h1 className="text-4xl font-black leading-none text-[#111827]">DEVIS</h1>
+                  <p className="text-[10px] font-black uppercase tracking-wide text-[#f97316]">Client</p>
+                  <p className="mt-1 text-sm font-black text-[#111827]">{quote.clientName ?? 'Client'}</p>
+                  {quote.clientLegalName && (
+                    <p className="text-xs text-slate-600">{quote.clientLegalName}</p>
+                  )}
                 </div>
 
                 <div className="text-right text-[11px] leading-5 text-slate-700">
@@ -97,14 +105,6 @@ export function PublicDevisClient({ id }: { id: string }) {
                   <p><span className="font-black">Date :</span> {dateFr(quote.issueDate)}</p>
                   <p><span className="font-black">Validite :</span> {dateFr(quote.expiryDate)}</p>
                 </div>
-              </div>
-
-              <div className="border-t border-slate-200 pt-3">
-                <p className="text-[10px] font-black uppercase tracking-wide text-[#f97316]">Client</p>
-                <p className="mt-1 text-sm font-black text-[#111827]">{quote.clientName ?? 'Client'}</p>
-                {quote.clientLegalName && (
-                  <p className="text-xs text-slate-600">{quote.clientLegalName}</p>
-                )}
               </div>
             </section>
           </header>

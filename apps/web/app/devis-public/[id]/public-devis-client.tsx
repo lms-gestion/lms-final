@@ -3,79 +3,88 @@
 import { useRef, useState } from 'react'
 import { trpc } from '@/lib/trpc/client'
 
-type PublicDevisClientProps = {
-  id?: string
-  quote?: any
-  lines?: any[]
+type AddressObject = {
+  street?: string | null
+  postalCode?: string | null
+  city?: string | null
+  country?: string | null
 }
 
 function formatEur(value: unknown) {
-  const amount = Number(value ?? 0)
+  const n = Number(value ?? 0)
 
   return new Intl.NumberFormat('fr-FR', {
     style: 'currency',
     currency: 'EUR',
-  }).format(Number.isFinite(amount) ? amount : 0)
+  }).format(Number.isFinite(n) ? n : 0)
 }
 
 function formatDate(value: unknown) {
   if (!value) return '-'
 
-  const date = new Date(String(value))
-  if (Number.isNaN(date.getTime())) return String(value)
+  const d = new Date(String(value))
+  if (Number.isNaN(d.getTime())) return String(value)
 
-  return date.toLocaleDateString('fr-FR')
+  return d.toLocaleDateString('fr-FR')
 }
 
-function calcLineTotalHt(line: any) {
-  const qty = Number(line?.quantity ?? 0)
-  const pu = Number(line?.unitPriceHt ?? 0)
-  const discount = Number(line?.discountPct ?? 0)
+function formatAddressLines(value: unknown): string[] {
+  if (!value) return []
 
-  const total = qty * pu * (1 - discount / 100)
+  if (typeof value === 'string') {
+    return value
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+  }
+
+  if (typeof value === 'object') {
+    const address = value as AddressObject
+
+    const cityLine = [address.postalCode, address.city].filter(Boolean).join(' ')
+
+    return [address.street, cityLine, address.country]
+      .map((line) => String(line ?? '').trim())
+      .filter(Boolean)
+  }
+
+  return [String(value)]
+}
+
+function lineTotal(line: any) {
+  const qty = Number(line?.quantity ?? 0)
+  const unitPrice = Number(line?.unitPriceHt ?? 0)
+  const discount = Number(line?.discountPct ?? 0)
+  const total = qty * unitPrice * (1 - discount / 100)
+
   return Number.isFinite(total) ? total : 0
 }
 
-export function PublicDevisClient(props: PublicDevisClientProps) {
-  const shouldFetch = !!props.id && !props.quote
-
-  const query = trpc.quotes.get.useQuery(
-    { id: props.id as string },
-    { enabled: shouldFetch }
-  )
-
-  const quote = props.quote ?? query.data?.quote
-  const lines = props.lines ?? query.data?.lines ?? []
-
+export function PublicDevisClient({ id }: { id: string }) {
+  const { data, isLoading, error } = trpc.quotes.get.useQuery({ id })
   const pdfRef = useRef<HTMLDivElement | null>(null)
   const [isDownloading, setIsDownloading] = useState(false)
   const [logoSrc, setLogoSrc] = useState('/img/logo-lms-icon.svg')
 
-  const remoteLogo = 'https://www.lamaisondesservices.fr/img/logo-lms-icon.svg'
-
-  if (shouldFetch && query.isLoading) {
-    return (
-      <div className="min-h-screen bg-white p-8 text-slate-600">
-        Chargement du devis...
-      </div>
-    )
+  if (isLoading) {
+    return <div className="min-h-screen bg-white p-8 text-slate-600">Chargement du devis...</div>
   }
 
-  if (!quote) {
-    return (
-      <div className="min-h-screen bg-white p-8 text-red-600">
-        Devis introuvable.
-      </div>
-    )
+  if (error || !data?.quote) {
+    return <div className="min-h-screen bg-white p-8 text-red-600">Devis introuvable.</div>
   }
 
-  async function handleDownloadPdf() {
+  const quote = data.quote
+  const lines = data.lines ?? []
+  const clientAddressLines = formatAddressLines(quote.clientAddress)
+
+  async function downloadPdf() {
     if (!pdfRef.current) return
 
     try {
       setIsDownloading(true)
 
-      const [{ default: html2canvas }, jspdfModule] = await Promise.all([
+      const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
         import('html2canvas'),
         import('jspdf'),
       ])
@@ -88,11 +97,10 @@ export function PublicDevisClient(props: PublicDevisClientProps) {
       })
 
       const imgData = canvas.toDataURL('image/png')
-      const pdf = new jspdfModule.jsPDF('p', 'mm', 'a4')
+      const pdf = new jsPDF('p', 'mm', 'a4')
 
       const pageWidth = pdf.internal.pageSize.getWidth()
       const pageHeight = pdf.internal.pageSize.getHeight()
-
       const imgWidth = pageWidth
       const imgHeight = (canvas.height * imgWidth) / canvas.width
 
@@ -109,8 +117,8 @@ export function PublicDevisClient(props: PublicDevisClientProps) {
         heightLeft -= pageHeight
       }
 
-      const safeRef = String(quote.reference ?? props.id ?? 'devis').replace(/[^a-zA-Z0-9_-]/g, '-')
-      pdf.save(`devis-${safeRef}.pdf`)
+      const safeReference = String(quote.reference ?? id).replace(/[^a-zA-Z0-9_-]/g, '-')
+      pdf.save(`devis-${safeReference}.pdf`)
     } finally {
       setIsDownloading(false)
     }
@@ -140,9 +148,9 @@ export function PublicDevisClient(props: PublicDevisClientProps) {
           }
 
           main {
-            background: #ffffff !important;
-            padding: 0 !important;
             margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
           }
 
           .print-hidden {
@@ -152,7 +160,6 @@ export function PublicDevisClient(props: PublicDevisClientProps) {
           .print-sheet {
             box-shadow: none !important;
             border-radius: 0 !important;
-            margin: 0 !important;
             max-width: none !important;
           }
         }
@@ -169,7 +176,7 @@ export function PublicDevisClient(props: PublicDevisClientProps) {
 
         <button
           type="button"
-          onClick={handleDownloadPdf}
+          onClick={downloadPdf}
           disabled={isDownloading}
           className="rounded-full bg-[#f97316] px-4 py-2 text-xs font-black text-white shadow hover:bg-[#ea580c] disabled:cursor-wait disabled:opacity-70"
         >
@@ -199,7 +206,9 @@ export function PublicDevisClient(props: PublicDevisClientProps) {
                   alt="La Maison des Services"
                   className="h-16 w-16 object-contain"
                   onError={() => {
-                    if (logoSrc !== remoteLogo) setLogoSrc(remoteLogo)
+                    if (logoSrc !== 'https://www.lamaisondesservices.fr/img/logo-lms-icon.svg') {
+                      setLogoSrc('https://www.lamaisondesservices.fr/img/logo-lms-icon.svg')
+                    }
                   }}
                 />
 
@@ -233,28 +242,37 @@ export function PublicDevisClient(props: PublicDevisClientProps) {
                   <p className="text-[10px] font-black uppercase tracking-wide text-[#f97316]">
                     Client
                   </p>
+
                   <p className="mt-1 text-sm font-black text-[#111827]">
-                    {quote.clientName ?? 'Client'}
+                    {String(quote.clientName ?? 'Client')}
                   </p>
+
                   {quote.clientLegalName ? (
-                    <p className="text-xs text-slate-600">{quote.clientLegalName}</p>
-                  ) : null}
-                  {quote.clientAddress ? (
-                    <p className="mt-1 text-xs text-slate-600 whitespace-pre-line">
-                      {quote.clientAddress}
+                    <p className="text-xs text-slate-600">
+                      {String(quote.clientLegalName)}
                     </p>
                   ) : null}
-                  {quote.clientEmail ? (
-                    <p className="text-xs text-slate-600">{quote.clientEmail}</p>
+
+                  {clientAddressLines.length > 0 ? (
+                    <div className="mt-1 text-xs text-slate-600">
+                      {clientAddressLines.map((line, index) => (
+                        <p key={`client-address-${index}`}>{line}</p>
+                      ))}
+                    </div>
                   ) : null}
+
+                  {quote.clientEmail ? (
+                    <p className="text-xs text-slate-600">{String(quote.clientEmail)}</p>
+                  ) : null}
+
                   {quote.clientPhone ? (
-                    <p className="text-xs text-slate-600">{quote.clientPhone}</p>
+                    <p className="text-xs text-slate-600">{String(quote.clientPhone)}</p>
                   ) : null}
                 </div>
 
                 <div className="text-right text-[11px] leading-5 text-slate-700">
                   <p>
-                    <span className="font-black">Ref :</span> {quote.reference ?? '-'}
+                    <span className="font-black">Ref :</span> {String(quote.reference ?? '-')}
                   </p>
                   <p>
                     <span className="font-black">Date :</span> {formatDate(quote.issueDate)}
@@ -264,7 +282,8 @@ export function PublicDevisClient(props: PublicDevisClientProps) {
                   </p>
                   {quote.chantierReference ? (
                     <p>
-                      <span className="font-black">Chantier :</span> {quote.chantierReference}
+                      <span className="font-black">Chantier :</span>{' '}
+                      {String(quote.chantierReference)}
                     </p>
                   ) : null}
                 </div>
@@ -272,15 +291,15 @@ export function PublicDevisClient(props: PublicDevisClientProps) {
             </section>
           </header>
 
-          <section className="mb-4 rounded-2xl border-l-4 border-[#f97316] bg-[#ffffff] px-4 py-3">
+          <section className="mb-4 rounded-2xl border-l-4 border-[#f97316] bg-white px-4 py-3">
             <p className="text-[10px] font-black uppercase tracking-wide text-[#f97316]">Objet</p>
-            <p className="mt-1 text-lg font-bold text-slate-700">{quote.subject ?? '-'}</p>
+            <p className="mt-1 text-lg font-bold text-slate-700">{String(quote.subject ?? '-')}</p>
           </section>
 
           {quote.introText ? (
             <section className="mb-4">
               <p className="whitespace-pre-wrap text-xs leading-5 text-slate-700">
-                {quote.introText}
+                {String(quote.introText)}
               </p>
             </section>
           ) : null}
@@ -308,7 +327,7 @@ export function PublicDevisClient(props: PublicDevisClientProps) {
                         return (
                           <tr key={key} className="border-t border-slate-200 bg-orange-50/80">
                             <td colSpan={6} className="px-3 py-2 font-black uppercase text-[#ea580c]">
-                              {line.description}
+                              {String(line.description ?? '')}
                             </td>
                           </tr>
                         )
@@ -318,21 +337,23 @@ export function PublicDevisClient(props: PublicDevisClientProps) {
                         return (
                           <tr key={key} className="border-t border-slate-100">
                             <td colSpan={6} className="px-3 py-2 italic text-slate-600">
-                              {line.description}
+                              {String(line.description ?? '')}
                             </td>
                           </tr>
                         )
                       }
 
-                      const totalHt = line.totalHt ?? calcLineTotalHt(line)
+                      const totalHt = line.totalHt ?? lineTotal(line)
 
                       return (
                         <tr key={key} className="border-t border-slate-100">
-                          <td className="px-3 py-2 leading-5 text-slate-800">{line.description}</td>
-                          <td className="px-2 py-2 text-right">{line.quantity ?? 0}</td>
-                          <td className="px-2 py-2">{line.unit ?? 'u'}</td>
+                          <td className="px-3 py-2 leading-5 text-slate-800">
+                            {String(line.description ?? '')}
+                          </td>
+                          <td className="px-2 py-2 text-right">{String(line.quantity ?? 0)}</td>
+                          <td className="px-2 py-2">{String(line.unit ?? 'u')}</td>
                           <td className="px-2 py-2 text-right">{formatEur(line.unitPriceHt)}</td>
-                          <td className="px-2 py-2 text-right">{line.vatRate ?? 0}%</td>
+                          <td className="px-2 py-2 text-right">{String(line.vatRate ?? 0)}%</td>
                           <td className="px-3 py-2 text-right font-black text-slate-900">
                             {formatEur(totalHt)}
                           </td>
@@ -356,19 +377,15 @@ export function PublicDevisClient(props: PublicDevisClientProps) {
                 </p>
               </div>
 
-              <div className="w-[310px] rounded-2xl bg-[#ffffff] p-4">
+              <div className="w-[310px] rounded-2xl bg-white p-4">
                 <div className="flex justify-between text-sm text-slate-500">
                   <span>Total HT</span>
-                  <span className="font-medium text-slate-700">
-                    {formatEur(quote.totalHt)}
-                  </span>
+                  <span className="font-medium text-slate-700">{formatEur(quote.totalHt)}</span>
                 </div>
 
                 <div className="mt-2 flex justify-between text-sm text-slate-500">
                   <span>TVA</span>
-                  <span className="font-medium text-slate-700">
-                    {formatEur(quote.totalTva)}
-                  </span>
+                  <span className="font-medium text-slate-700">{formatEur(quote.totalTva)}</span>
                 </div>
 
                 <div className="mt-4 flex justify-between border-t border-slate-200 pt-4 text-[20px] font-black text-[#f97316]">

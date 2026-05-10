@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 175" fill="none" role="img" aria-label="LMS icône maison">
+  <!-- Corps complet de la maison (navy) -->
+  <path d="M100 10 L188 78 L188 165 L12 165 L12 78 Z" fill="#0F2644"/>
+  <!-- Accent orange — porte/garage bas droite avec angles arrondis -->
+  <rect x="116" y="100" width="72" height="65" rx="7" fill="#F5A623"/>
+</svg>

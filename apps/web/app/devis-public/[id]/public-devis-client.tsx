@@ -63,30 +63,21 @@ export function PublicDevisClient({ id }: { id: string }) {
         <div className="relative p-10 print:p-8">
           <header className="mb-10 grid grid-cols-[1.2fr_0.8fr] gap-10 border-b border-slate-200 pb-8">
             <div>
-              <div className="inline-flex items-center gap-4 rounded-[1.5rem] bg-[#0f172a] px-6 py-5 shadow">
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#f97316]">
-                  <span className="text-3xl font-black text-white">LM</span>
+              <div className="inline-flex items-center gap-4">
+                <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-white shadow-sm ring-1 ring-slate-200">
+                  <img
+                    src="/img/logo-lms-icon.svg"
+                    alt="La Maison des Services"
+                    className="h-20 w-20 object-contain"
+                  />
                 </div>
                 <div>
-                  <p className="text-2xl font-black leading-none tracking-tight text-white">LA MAISON</p>
-                  <p className="mt-1 text-2xl font-black leading-none tracking-tight text-[#f97316]">DES SERVICES</p>
-                </div>
-              </div>
-
-              <p className="mt-5 max-w-xl text-sm font-semibold leading-6 text-slate-700">
-                Un seul partenaire multi-services pour vos interventions bâtiment, syndics,
-                assurances, agences immobilières et collectivités.
-              </p>
-
-              <div className="mt-4 grid max-w-xl grid-cols-3 gap-3 text-center text-xs font-bold">
-                <div className="rounded-2xl bg-orange-50 px-3 py-3 text-[#ea580c]">
-                  Devis 48h
-                </div>
-                <div className="rounded-2xl bg-slate-100 px-3 py-3 text-slate-800">
-                  Urgence 4h
-                </div>
-                <div className="rounded-2xl bg-slate-100 px-3 py-3 text-slate-800">
-                  7j/7 · 24h/24
+                  <p className="text-3xl font-black leading-none tracking-tight text-[#0f172a]">
+                    La Maison
+                  </p>
+                  <p className="mt-1 text-3xl font-black leading-none tracking-tight text-[#f97316]">
+                    des Services
+                  </p>
                 </div>
               </div>
             </div>
